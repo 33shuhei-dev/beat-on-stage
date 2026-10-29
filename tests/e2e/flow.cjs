@@ -299,7 +299,8 @@ async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
 }
 async function allCharts() {
   const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
-  for (const [label, id] of SONGS) for (const [d, dl] of DIFFS) await oneChart(browser, label, id, d, dl, d === 'easy');
+  const only = process.env.ONLY ? process.env.ONLY.split(',') : null; // 例: ONLY=vote/normal,kimi_ga_warau_hou_e/hard
+  for (const [label, id] of SONGS) for (const [d, dl] of DIFFS) if (!only || only.includes(`${id}/${d}`)) await oneChart(browser, label, id, d, dl, d === 'easy');
   await browser.close();
 }
 
@@ -397,11 +398,11 @@ async function failures() {
 }
 
 (async () => {
-  await run('mobile390', { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true }, 'pointer');
-  await run('pc', { viewport: { width: 1280, height: 800 } }, 'key');
-  await exclusive();
+  if (!process.env.ONLY) await run('mobile390', { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true }, 'pointer');
+  if (!process.env.ONLY) await run('pc', { viewport: { width: 1280, height: 800 } }, 'key');
+  if (!process.env.ONLY) await exclusive();
   await allCharts();
-  await failures();
+  if (!process.env.ONLY) await failures();
   fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(results, null, 1));
   const bad = results.filter((r) => !r.ok);
   console.log(`\n${results.length - bad.length}/${results.length} passed`);
