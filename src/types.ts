@@ -8,6 +8,9 @@ export interface SongData {
   durationSeconds: number;
   fadeOut: { startSeconds: number; endSeconds: number };
   audio: string;
+  /** 試聴用フル音源（クリック時にだけ取得する） */
+  fullAudio?: string | null;
+  fullDurationSeconds?: number;
   /** ジャケット画像（正方形・採用済み素材をそのまま使用） */
   jacket?: string | null;
   available: boolean;

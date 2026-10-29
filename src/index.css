@@ -266,3 +266,22 @@ body { word-break: auto-phrase; line-break: strict; }
 .lab-grid small.ng { color: #ff9a8a; }
 .lab-opts { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; }
 .lab-opts label { display: inline-flex; align-items: center; gap: 6px; }
+
+/* フル試聴 */
+.song-item { display: flex; flex-direction: column; gap: 6px; }
+.listen-btn { align-self: flex-end; }
+.profile-song { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: 10px; font-size: 14px; }
+.listen-sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; max-width: 480px; margin: 0 auto;
+  padding: 10px 14px calc(12px + env(safe-area-inset-bottom)); border-radius: 16px 16px 0 0;
+  background: rgba(20, 6, 38, 0.97); border: 1.5px solid var(--accent); border-bottom: 0;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
+}
+.listen-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.listen-title { font-weight: 800; font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.listen-ctrl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.listen-ctrl input[type=range] { flex: 1; min-width: 120px; accent-color: var(--accent); }
+.listen-play { min-width: 44px; }
+.listen-time { font-variant-numeric: tabular-nums; font-size: 13px; }
+.listen-load { font-size: 12px; opacity: 0.7; }
+.listen-error { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; }

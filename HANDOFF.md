@@ -2,12 +2,13 @@
 
 2026-10-29 / Claude Code。範囲は「Vote Vote Vote／NORMAL／ゆずちゃん」で、曲選択→キャラ選択→難易度→プレイ→結果→即リトライが動くところまで。公開・ドメイン・外部サービス・ゆず係サイトへのリンクは未着手（別工程）。
 
-## 追加素材: 公園維持清掃車 / 君が笑うほうへ（素材登録のみ・未公開）
-- キャラ `koen_iji_seisosha`（idle.png 1枚。リアクション未登録は idle をフォールバック）。`publicReleaseApproved:false`。
-- 専用曲 `kimi_ga_warau_hou_e`（239.76秒）。`available:false`＝選曲画面で「準備中」。専用キャラは公園維持清掃車。
-- 音源は元の m4a が Opus コーデックで iOS Safari 等で不安定なため mp3 に変換して配置（元ファイルは保持していない。必要なら元zipから）。
-- TODO: 拍解析 / EASY・NORMAL・HARD譜面 / フェードアウト位置（仮で曲末） / ジャケット / プロフィール情報 / リアクション差分。
-- 公開サイト(gh-pages)にはまだ反映していない。反映は `scripts/deploy-pages.sh origin`。
+## v0.5.0（2026-10-29）公園維持清掃車・君が笑うほうへ・フル試聴
+- キャラ `koen_iji_seisosha` 公園維持清掃車（区分=応援者、X=https://x.com/rego0701、所属・紹介文は空欄のまま）。base.png と 10状態（idle/select/ready/hit/perfect/combo/miss/cheer/clear/best）を既存のリアクションエンジンに v1 として登録（512×512・足元基準 y=480。ゆずちゃんの設定を共用）。公開承認はユーザー指示（2026-10-29）。他キャラの承認は個別。
+- 専用曲 `kimi_ga_warau_hou_e`（ゲーム用80秒・77〜80秒フェード）。EASY/NORMAL/HARD を新規作成（tools/charts/kimi.py）。テンポは約134BPMでほぼ一定（自動解析・聴取未確認）、bar0=約0.387秒。ノーツ・ホールドは 76.93 秒までに終了。譜面は `0.1.0-draft`。
+- 選曲画面は「共通曲＋選択キャラの専用曲」だけを表示（他キャラの専用曲は出さない）。専用曲が準備中でも共通曲は選べる。
+- フル試聴：選曲画面の各曲「♪ フルで聴く」とプロフィールの専用曲入口。HTMLAudioElement、操作時だけ取得（初期表示では取得しない）、再生/一時停止/シーク/現在・総時間/閉じる、1曲のみ、画面移動・曲選択・ゲーム開始で停止して位置リセット、バックグラウンドで一時停止（自動再開しない）、失敗時は再試行。音量は設定の「音楽の音量」に連動。フル音源は public/assets/audio/full/（3曲で約16MB。操作時に取得）。
+- **未受領: 君が笑うほうへのジャケット**（素材ZIPが途中で切れて jackets/ が読めなかった）。現在は文字の仮ジャケット。`jackets/kimi.png` を受領したら public/assets/jackets/kimi_ga_warau_hou_e.png に置き songs.json の `jacket` を設定。既存2曲のジャケットは確認用だったため変更していない。
+- テスト: 単体144、e2e = flow（9譜面）/ settings / listen（フル試聴25項目）。
 
 ## 公開状況（2026-10-29）
 - 公開URL: https://33shuhei-dev.github.io/beat-on-stage/ （ログイン不要）

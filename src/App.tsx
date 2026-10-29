@@ -11,6 +11,7 @@ import { bestKey, isDevMode, loadBest, loadSelection, loadSettings, markTutorial
 import { DIFFICULTIES, DIFFICULTY_LABEL, type CharacterData, type CharacterState, type ChartData, type Difficulty, type SongData } from './types';
 import { PlayScreen, type PlaySpec } from './ui/PlayScreen';
 import { ReactionLab } from './ui/ReactionLab';
+import { FullListenSheet, ListenButton } from './ui/FullListen';
 import { SettingsPanel } from './ui/SettingsPanel';
 
 type Screen = 'character' | 'profile' | 'song' | 'difficulty' | 'play' | 'practice' | 'result';
@@ -34,6 +35,8 @@ export default function App() {
   const [sel, setSel] = useState<Selection>(loadSelection);
   const [settings, setSettingsState] = useState<Settings>(loadSettings);
   const [showSettings, setShowSettings] = useState(false);
+  /** フル試聴中の曲ID（1曲だけ）。画面移動・ゲーム開始・リトライで閉じる */
+  const [listenId, setListenId] = useState<string | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
   const [chart, setChart] = useState<ChartData | null>(null);
   const [buffer, setBuffer] = useState<AudioBuffer | null>(null);
@@ -110,6 +113,9 @@ export default function App() {
       setDev(next);
     }
   };
+
+  // 画面移動・ゲーム開始・リトライでフル試聴を止める（再生位置は捨てる）
+  useEffect(() => { setListenId(null); }, [screen, playKey]);
 
   // 難易度画面に来たら譜面と音源を準備
   const prepare = useCallback(async () => {
@@ -261,19 +267,19 @@ export default function App() {
         </section>
       )}
 
-      {screen === 'profile' && character && <ProfileScreen c={character} onBack={() => setScreen('character')} />}
+      {screen === 'profile' && character && <ProfileScreen c={character} songs={songs} onListen={setListenId} onBack={() => setScreen('character')} />}
 
       {screen === 'song' && character && (
         <section className="screen">
           <div className="step"><span className="step-no">2</span>曲をえらぶ</div>
           <p className="note small">キャラ：{character.name}</p>
           <div className="cards">
-            {songs.map((s) => {
+            {songs.filter((s) => !s.exclusiveCharacterId || s.exclusiveCharacterId === character.id).map((s) => {
               const ok = playableBy(s, character.id);
               const owner = s.exclusiveCharacterId ? chars.find((x) => x.id === s.exclusiveCharacterId)?.name : null;
               return (
+                <div key={s.id} className="song-item">
                 <button
-                  key={s.id}
                   className={`song-card ${ok ? '' : 'disabled'} ${sel.songId === s.id ? 'selected' : ''}`}
                   disabled={!ok}
                   aria-disabled={!ok}
@@ -289,9 +295,10 @@ export default function App() {
                     <div className="song-title">{s.title}</div>
                     <div className="song-info">{owner ? `${owner}専用` : '共通曲'}・{Math.round(s.durationSeconds)}秒</div>
                     {!s.available && <div className="badge">準備中</div>}
-                    {s.available && !ok && <div className="badge">{owner}専用</div>}
-                  </div>
+                                      </div>
                 </button>
+                <ListenButton song={s} onOpen={setListenId} />
+                </div>
               );
             })}
           </div>
@@ -363,6 +370,10 @@ export default function App() {
         />
       )}
 
+      {listenId && <div style={{ height: 112 }} aria-hidden />}
+      {listenId && songs.find((x) => x.id === listenId) && (
+        <FullListenSheet key={listenId} song={songs.find((x) => x.id === listenId)!} volume={settings.musicVolume} onClose={() => setListenId(null)} />
+      )}
       {showSettings && <SettingsPanel settings={settings} onChange={setSettings} onClose={() => setShowSettings(false)} />}
       {showTutorial && (
         <div className="overlay" role="dialog" aria-modal="true">
@@ -451,7 +462,8 @@ function CharacterCard({ c, selected, posing, onSelect, onProfile }: { c: Charac
 }
 
 /** プロフィール（サイト内表示）。未提供の項目は出さない。外部リンクは押したときだけ別タブで開く */
-function ProfileScreen({ c, onBack }: { c: CharacterData; onBack: () => void }) {
+function ProfileScreen({ c, songs, onListen, onBack }: { c: CharacterData; songs: SongData[]; onListen: (id: string) => void; onBack: () => void }) {
+  const own = songs.filter((x) => x.exclusiveCharacterId === c.id);
   const [broken, setBroken] = useState(false);
   const rows: [string, string][] = [['区分', c.participationType]];
   if (c.affiliation) rows.push(['所属', c.affiliation]);
@@ -475,6 +487,12 @@ function ProfileScreen({ c, onBack }: { c: CharacterData; onBack: () => void }) 
           <a key={l.url} className="btn primary" href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</a>
         ))}
         {(c.links?.length || c.xUrl) && <p className="note small">外部サイトは別タブで開きます。</p>}
+        {own.map((x) => (
+          <div key={x.id} className="profile-song">
+            <span>専用曲：{x.title}{x.available ? '' : '（準備中）'}</span>
+            <ListenButton song={x} onOpen={onListen} />
+          </div>
+        ))}
       </div>
       <div className="footer-actions"><button className="btn ghost" onClick={onBack}>← 戻る</button></div>
     </section>

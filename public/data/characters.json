@@ -53,21 +53,46 @@
  {
   "id": "koen_iji_seisosha",
   "name": "公園維持清掃車",
-  "participationType": "人外マスコット",
+  "participationType": "応援者",
   "affiliation": null,
   "bio": null,
-  "xUrl": null,
+  "xUrl": "https://x.com/rego0701",
   "enabledInPrototype": true,
   "publicReleaseApproved": true,
-  "assetVersion": "v0.1.0",
+  "assetVersion": "v1.1",
   "images": {
-   "idle": "assets/characters/koen_iji_seisosha/idle.png"
+   "idle": "assets/characters/koen_iji_seisosha/base.png"
   },
   "fallbackState": "idle",
   "display": {
    "scale": 1.0,
    "offsetY": 0
   },
-  "publicReleaseNote": "2026-10-29 ユーザー（制作者）の指示により公開サイトへの反映を承認"
+  "publicReleaseNote": "2026-10-29 ユーザー（制作者）の指示により公開サイトへの反映を承認",
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 512,
+    "height": 512
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/koen_iji_seisosha/reactions/v1/idle.png",
+    "select": "assets/characters/koen_iji_seisosha/reactions/v1/select.png",
+    "ready": "assets/characters/koen_iji_seisosha/reactions/v1/ready.png",
+    "hit": "assets/characters/koen_iji_seisosha/reactions/v1/hit.png",
+    "perfect": "assets/characters/koen_iji_seisosha/reactions/v1/perfect.png",
+    "combo": "assets/characters/koen_iji_seisosha/reactions/v1/combo.png",
+    "miss": "assets/characters/koen_iji_seisosha/reactions/v1/miss.png",
+    "cheer": "assets/characters/koen_iji_seisosha/reactions/v1/cheer.png",
+    "clear": "assets/characters/koen_iji_seisosha/reactions/v1/clear.png",
+    "best": "assets/characters/koen_iji_seisosha/reactions/v1/best.png"
+   }
+  }
  }
 ]
