@@ -155,20 +155,42 @@ export class AudioEngine {
   }
 }
 
-/** 打音（短いクリック）をコードで生成 */
+/**
+ * 打音をコードで生成。「ピッ」という細い電子音ではなく、
+ * 低いアタック（胴鳴り）＋手拍子のようなノイズ＋短い高域の芯を重ねた、厚みのある「タンッ」に寄せる。
+ */
 function makeHitBuffer(ctx: BaseAudioContext): AudioBuffer {
   const sr = ctx.sampleRate;
-  const len = Math.floor(sr * 0.05);
+  const len = Math.floor(sr * 0.16);
   const buf = ctx.createBuffer(1, len, sr);
   const d = buf.getChannelData(0);
   let seed = 12345;
+  let lp = 0;
+  let hpPrev = 0;
+  let hpOut = 0;
+  let phase = 0;
   for (let i = 0; i < len; i++) {
     const t = i / sr;
     seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-    const noise = (seed / 0x7fffffff) * 2 - 1;
-    const env = Math.exp(-t * 90);
-    d[i] = (Math.sin(2 * Math.PI * 2200 * t) * 0.5 + noise * 0.35) * env * 0.8;
+    const white = (seed / 0x7fffffff) * 2 - 1;
+    // ノイズを帯域制限（ハイパス→ローパス）して 1〜5kHz 付近の「パシッ」に
+    hpOut = 0.86 * (hpOut + white - hpPrev);
+    hpPrev = white;
+    lp += 0.45 * (hpOut - lp);
+    const snap = lp * Math.exp(-t * 38) * 0.9;
+    // 胴鳴り：240Hz→110Hz へ下がるサイン
+    const f = 110 + 130 * Math.exp(-t * 40);
+    phase += (2 * Math.PI * f) / sr;
+    const body = Math.sin(phase) * Math.exp(-t * 28) * 0.85;
+    // 立ち上がりの芯（最初の数ms）
+    const tick = Math.sin(2 * Math.PI * 1500 * t) * Math.exp(-t * 400) * 0.35;
+    const attack = Math.min(1, t / 0.0008);
+    d[i] = (body + snap + tick) * attack;
   }
+  // 正規化（ピーク0.9）
+  let peak = 0;
+  for (let i = 0; i < len; i++) peak = Math.max(peak, Math.abs(d[i]));
+  if (peak > 0) for (let i = 0; i < len; i++) d[i] *= 0.9 / peak;
   return buf;
 }
 

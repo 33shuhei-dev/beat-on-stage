@@ -401,13 +401,13 @@ function ResultScreen({ rv, song, character, difficulty, chartVersion, onRetry, 
             <div className="label">SCORE</div>
             <div className="score">{r.score.toLocaleString('ja-JP')}</div>
             <div className="best-diff">
-              {r.autoplay ? '自己ベスト対象外' : prevBest ? (
-                <>自己ベスト比 <b className={diff! > 0 ? 'up' : diff! < 0 ? 'down' : ''}>{diff! > 0 ? '+' : ''}{diff!.toLocaleString('ja-JP')}</b>{newBest && <span className="newbest">NEW BEST</span>}</>
+              {r.autoplay ? <span className="nw">自己ベスト対象外</span> : prevBest ? (
+                <><span className="nw">自己ベスト比</span> <b className={`nw ${diff! > 0 ? 'up' : diff! < 0 ? 'down' : ''}`}>{diff! > 0 ? '+' : ''}{diff!.toLocaleString('ja-JP')}</b>{newBest && <span className="newbest">NEW BEST</span>}</>
               ) : (
                 <span className="newbest">初記録</span>
               )}
             </div>
-            <div className="combo">最大コンボ <b>{s.maxCombo}</b> / {s.totalUnits}</div>
+            <div className="combo"><span className="nw">最大コンボ</span> <span className="nw"><b>{s.maxCombo}</b> / {s.totalUnits}</span></div>
           </div>
         </div>
         <table className="breakdown">
@@ -419,7 +419,7 @@ function ResultScreen({ rv, song, character, difficulty, chartVersion, onRetry, 
             <tr><th>FAST / SLOW</th><td>{s.fast} / {s.slow}</td></tr>
           </tbody>
         </table>
-        <div className="result-foot">BEAT ON STAGE ・ {SUBTITLE} ・ 譜面 {chartVersion}</div>
+        <div className="result-foot"><span className="nw">BEAT ON STAGE</span> <span className="nw">{SUBTITLE}</span> <span className="nw">譜面 {chartVersion}</span></div>
       </div>
       {character.xUrl && (
         <a className="btn ghost" href={character.xUrl} target="_blank" rel="noopener noreferrer">{character.name} の X を見る</a>

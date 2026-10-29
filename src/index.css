@@ -222,3 +222,16 @@ input[type='range'] { width: 100%; accent-color: var(--accent); height: 28px; }
 .song-card:disabled { opacity: 1; }
 .song-card:disabled .jacket.img img { opacity: 0.72; }
 .song-card:disabled .song-meta { opacity: 0.6; }
+
+/* 改行：語句の途中で折り返さない（Chrome系は文節単位、その他は .nw の塊単位で折り返す） */
+body { word-break: auto-phrase; line-break: strict; }
+.nw { white-space: nowrap; }
+.result-char { width: 112px; }
+.result-char img { width: 112px; height: 112px; }
+.result-score .score { font-size: clamp(28px, 8.5vw, 40px); white-space: nowrap; }
+.best-diff { column-gap: 6px; row-gap: 2px; }
+.combo { display: flex; flex-wrap: wrap; column-gap: 6px; }
+.result-foot { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 10px; row-gap: 2px; }
+.song-title, .char-name { overflow-wrap: anywhere; }
+.result-score { container-type: inline-size; }
+.result-score .score { font-size: clamp(22px, 19cqi, 40px); }
