@@ -6,7 +6,7 @@ import type { ChartData, SongData } from '../types';
 import { buildTimedNotes } from './tempo';
 
 const root = resolve(__dirname, '../../public');
-const songs: SongData[] = JSON.parse(readFileSync(resolve(root, 'data/songs.json'), 'utf8'));
+const songs: SongData[] = (JSON.parse(readFileSync(resolve(root, 'data/songs.json'), 'utf8')) as SongData[]).filter((s) => s.available);
 
 for (const song of songs) {
   for (const [diff, path] of Object.entries(song.charts)) {

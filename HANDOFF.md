@@ -2,6 +2,13 @@
 
 2026-10-29 / Claude Code。範囲は「Vote Vote Vote／NORMAL／ゆずちゃん」で、曲選択→キャラ選択→難易度→プレイ→結果→即リトライが動くところまで。公開・ドメイン・外部サービス・ゆず係サイトへのリンクは未着手（別工程）。
 
+## 追加素材: 公園維持清掃車 / 君が笑うほうへ（素材登録のみ・未公開）
+- キャラ `koen_iji_seisosha`（idle.png 1枚。リアクション未登録は idle をフォールバック）。`publicReleaseApproved:false`。
+- 専用曲 `kimi_ga_warau_hou_e`（239.76秒）。`available:false`＝選曲画面で「準備中」。専用キャラは公園維持清掃車。
+- 音源は元の m4a が Opus コーデックで iOS Safari 等で不安定なため mp3 に変換して配置（元ファイルは保持していない。必要なら元zipから）。
+- TODO: 拍解析 / EASY・NORMAL・HARD譜面 / フェードアウト位置（仮で曲末） / ジャケット / プロフィール情報 / リアクション差分。
+- 公開サイト(gh-pages)にはまだ反映していない。反映は `scripts/deploy-pages.sh origin`。
+
 ## 公開状況（2026-10-29）
 - 公開URL: https://33shuhei-dev.github.io/beat-on-stage/ （ログイン不要）
 - リポジトリ: https://github.com/33shuhei-dev/beat-on-stage （main=ソース、gh-pages=ビルド済み配信物）

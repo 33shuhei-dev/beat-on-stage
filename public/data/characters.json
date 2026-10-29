@@ -49,5 +49,25 @@
    }
   ],
   "publicReleaseNote": "2026-10-29 ユーザー（制作者）の指示により一般公開を承認"
+ },
+ {
+  "id": "koen_iji_seisosha",
+  "name": "公園維持清掃車",
+  "participationType": "人外マスコット",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "enabledInPrototype": true,
+  "publicReleaseApproved": false,
+  "assetVersion": "v0.1.0",
+  "images": {
+   "idle": "assets/characters/koen_iji_seisosha/idle.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "publicReleaseNote": "素材登録のみ。一般公開の承認は未確認（ゆずちゃんの承認とは別）"
  }
 ]
