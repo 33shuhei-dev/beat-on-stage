@@ -16,6 +16,8 @@ export interface JudgeEvent {
   grade: Grade;
   /** 入力 − ノーツ時刻（ms）。負=早い。自動MISS・終端は undefined */
   deltaMs?: number;
+  /** この判定の直後のコンボ数 */
+  combo: number;
 }
 
 interface NoteState {
@@ -84,7 +86,7 @@ export class Judge {
       if (deltaMs < 0) st.fast++;
       else st.slow++;
     }
-    return { noteId: s.note.id, lane: s.note.lane, part, grade, deltaMs };
+    return { noteId: s.note.id, lane: s.note.lane, part, grade, deltaMs, combo: st.combo };
   }
 
   /** 押下。lane のノーツを最大1つ判定する。 */

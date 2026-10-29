@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Settings } from '../config';
 import { getAudio } from '../audioHub';
+import { isDevMode } from '../storage';
 import { GameSession, type SessionResult, type SessionState } from '../engine/game';
+import type { SpriteSet } from '../engine/sprites';
 import type { TimedNote } from '../types';
 
 export interface PlaySpec {
@@ -11,7 +13,7 @@ export interface PlaySpec {
   notes: TimedNote[];
   barLines: number[];
   chorusStartMs: number | null;
-  character: HTMLImageElement | null;
+  sprites: SpriteSet;
   characterName: string;
   charScale?: number;
   charOffsetY?: number;
@@ -46,7 +48,7 @@ export function PlayScreen({ spec, settings, onFinish, onRestart, onExit, exitLa
       barLines: spec.barLines,
       chorusStartMs: spec.chorusStartMs,
       settings,
-      character: spec.character,
+      sprites: spec.sprites,
       characterName: spec.characterName,
       charScale: spec.charScale,
       charOffsetY: spec.charOffsetY,
@@ -59,7 +61,7 @@ export function PlayScreen({ spec, settings, onFinish, onRestart, onExit, exitLa
       onFinish: (r) => finishRef.current(r),
     });
     sessionRef.current = s;
-    if (import.meta.env.DEV || new URLSearchParams(location.search).has('dev')) (window as unknown as { __bos?: unknown }).__bos = s;
+    if (import.meta.env.DEV || isDevMode()) (window as unknown as { __bos?: unknown }).__bos = s;
     s.start();
     return () => {
       s.dispose();

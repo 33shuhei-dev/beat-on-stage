@@ -14,6 +14,7 @@ const files = [
   'data/songs.json', 'data/characters.json', 'data/charts/vote.normal.json',
   'assets/audio/vote.mp3', 'assets/characters/char_0001/idle.png',
   'assets/brand/logo.png', 'assets/jackets/vote.png', 'assets/jackets/yobuyo.png',
+  ...['idle', 'select', 'ready', 'hit', 'perfect', 'combo', 'miss', 'cheer', 'clear', 'best'].map((k) => `assets/characters/char_0001/reactions/v1/${k}.png`),
 ]
 for (const f of files) {
   mkdirSync(dirname(`${out}/${f}`), { recursive: true })

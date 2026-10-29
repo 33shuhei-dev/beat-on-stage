@@ -1,4 +1,4 @@
-import { LANE_KEY_LABELS } from '../config';
+import { LANE_KEY_LABELS, STAGE_SPRITE_SCALE } from '../config';
 import type { Grade, TimedNote } from '../types';
 
 export interface Layout {
@@ -48,7 +48,11 @@ export interface RenderState {
   reduced: boolean;
   showFastSlow: boolean;
   now: number;
+  /** いま表示するポーズ画像（全ポーズ同一キャンバス・同一アンカー）。null なら代替シルエット */
   character: HTMLImageElement | null;
+  /** 足元基準点（画像に対する比率）。反応画像は x=0.5, y=0.9375 */
+  anchorX: number;
+  anchorY: number;
   characterName: string;
   charScale: number;
   charOffsetY: number;
@@ -129,12 +133,28 @@ function drawStage(g: CanvasRenderingContext2D, L: Layout, s: RenderState) {
   g.stroke();
 }
 
+/** 舞台上のキャラ画像の位置・大きさ。全ポーズ共通（足元アンカーを同じ点に合わせ、倍率は固定） */
+export function stageSpriteRect(
+  L: Layout,
+  img: { naturalWidth: number; naturalHeight: number },
+  anchorX: number,
+  anchorY: number,
+  scale: number,
+  offsetY: number,
+) {
+  const dh = L.stageH * STAGE_SPRITE_SCALE * scale;
+  const dw = dh * (img.naturalWidth / img.naturalHeight);
+  const cx = L.w / 2;
+  const footY = L.stageH * 0.95 + offsetY;
+  return { x: cx - dw * anchorX, y: footY - dh * anchorY, w: dw, h: dh, cx, footY };
+}
+
 function drawCharacter(g: CanvasRenderingContext2D, L: Layout, s: RenderState) {
   const { w, stageH } = L;
-  const boxH = stageH * 0.9 * s.charScale;
+  // 舞台上のキャラ枠は固定。画像ごとの自動拡大縮小はしない（全ポーズ同じ倍率・同じ足元位置）
   const cx = w / 2;
   const footY = stageH * 0.95 + s.charOffsetY;
-  // コンボ節目の小さな弾み
+  // コンボ節目の小さな弾み（演出軽減では止める）
   let bump = 0;
   if (!s.reduced) {
     const dt = s.now - s.comboBumpAt;
@@ -142,25 +162,24 @@ function drawCharacter(g: CanvasRenderingContext2D, L: Layout, s: RenderState) {
   }
   const img = s.character;
   if (img && img.complete && img.naturalWidth > 0) {
-    const ar = img.naturalWidth / img.naturalHeight;
-    const dh = boxH;
-    const dw = dh * ar;
+    const r = stageSpriteRect(L, img, s.anchorX, s.anchorY, s.charScale, s.charOffsetY);
     const glowDt = s.now - s.hitGlowAt;
     g.save();
-    if (glowDt >= 0 && glowDt < 180) {
+    if (!s.reduced && glowDt >= 0 && glowDt < 180) {
       g.shadowColor = 'rgba(255,170,255,0.9)';
       g.shadowBlur = 18 * (1 - glowDt / 180);
     }
-    g.drawImage(img, cx - dw / 2, footY - dh - bump, dw, dh);
+    g.drawImage(img, r.x, r.y - bump, r.w, r.h);
     g.restore();
   } else {
     // 画像なし：シルエットで代用（操作は止めない）
+    const bh = stageH * 0.9;
     g.fillStyle = 'rgba(200,160,255,0.35)';
     g.beginPath();
-    g.arc(cx, footY - boxH * 0.72 - bump, boxH * 0.16, 0, Math.PI * 2);
+    g.arc(cx, footY - bh * 0.72 - bump, bh * 0.16, 0, Math.PI * 2);
     g.fill();
     g.beginPath();
-    g.ellipse(cx, footY - boxH * 0.28 - bump, boxH * 0.2, boxH * 0.3, 0, 0, Math.PI * 2);
+    g.ellipse(cx, footY - bh * 0.28 - bump, bh * 0.2, bh * 0.3, 0, 0, Math.PI * 2);
     g.fill();
   }
   // 名前プレート

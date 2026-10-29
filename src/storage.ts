@@ -58,6 +58,17 @@ export const saveBest = (k: string, r: BestRecord) => write(k, r);
 export const tutorialSeen = () => read<boolean>('tutorialSeen') === true;
 export const markTutorialSeen = () => write('tutorialSeen', true);
 
+/** 開発用メニュー：?dev=1 か、ロゴ5連打で端末内に保存したフラグ */
+export function isDevMode(): boolean {
+  try {
+    if (new URLSearchParams(location.search).has('dev')) return true;
+  } catch {
+    /* ignore */
+  }
+  return read<boolean>('dev') === true;
+}
+export const setDevMode = (on: boolean) => write('dev', on);
+
 function clamp(v: number, lo: number, hi: number) {
   return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : lo;
 }

@@ -10,17 +10,37 @@
   "publicReleaseApproved": false,
   "assetVersion": "v001",
   "images": {
-   "idle": "assets/characters/char_0001/idle.png",
-   "hit": null,
-   "combo": null,
-   "miss": null,
-   "cheer": null,
-   "clear": null
+   "idle": "assets/characters/char_0001/idle.png"
   },
   "fallbackState": "idle",
   "display": {
    "scale": 1.0,
    "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 512,
+    "height": 512
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/char_0001/reactions/v1/idle.png",
+    "select": "assets/characters/char_0001/reactions/v1/select.png",
+    "ready": "assets/characters/char_0001/reactions/v1/ready.png",
+    "hit": "assets/characters/char_0001/reactions/v1/hit.png",
+    "perfect": "assets/characters/char_0001/reactions/v1/perfect.png",
+    "combo": "assets/characters/char_0001/reactions/v1/combo.png",
+    "miss": "assets/characters/char_0001/reactions/v1/miss.png",
+    "cheer": "assets/characters/char_0001/reactions/v1/cheer.png",
+    "clear": "assets/characters/char_0001/reactions/v1/clear.png",
+    "best": "assets/characters/char_0001/reactions/v1/best.png"
+   }
   }
  }
 ]

@@ -19,7 +19,19 @@ export interface SongData {
   charts: Record<Difficulty, string | null>;
 }
 
-export type CharacterState = 'idle' | 'hit' | 'combo' | 'miss' | 'cheer' | 'clear';
+export type CharacterState = 'idle' | 'select' | 'ready' | 'hit' | 'perfect' | 'combo' | 'miss' | 'cheer' | 'clear' | 'best';
+export const CHARACTER_STATES: CharacterState[] = ['idle', 'select', 'ready', 'hit', 'perfect', 'combo', 'miss', 'cheer', 'clear', 'best'];
+
+/** リアクション素材セット（全ポーズ同一キャンバス・同一アンカー） */
+export interface ReactionSet {
+  version: string;
+  canvas: { width: number; height: number };
+  /** 足元基準点。[x, y] はキャンバスに対する比率 */
+  anchor: [number, number];
+  base: CharacterState;
+  fallback: CharacterState;
+  states: Partial<Record<CharacterState, string>>;
+}
 
 export interface CharacterData {
   id: string;
@@ -31,7 +43,9 @@ export interface CharacterData {
   enabledInPrototype: boolean;
   publicReleaseApproved: boolean;
   assetVersion: string;
-  images: Record<CharacterState, string | null>;
+  /** 選択カード用などの確定画像（元画像のまま保持） */
+  images: Partial<Record<CharacterState, string | null>>;
+  reactions?: ReactionSet | null;
   fallbackState: CharacterState;
   display?: { scale?: number; offsetY?: number };
 }

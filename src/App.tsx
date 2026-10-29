@@ -1,13 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getAudio, getBuffer, prefetch } from './audioHub';
-import { type Settings } from './config';
-import { asset, loadChart, loadCharacters, loadImage, loadSongs } from './data';
+import { REACTION, type Settings } from './config';
+import { asset, loadChart, loadCharacters, loadSongs } from './data';
 import type { SessionResult } from './engine/game';
 import { buildPractice } from './engine/practice';
+import { resultState } from './engine/reaction';
+import { loadSprites, poseSources, type SpriteSet } from './engine/sprites';
 import { barLinesMs, buildTimedNotes } from './engine/tempo';
-import { bestKey, loadBest, loadSelection, loadSettings, markTutorialSeen, saveBest, saveSelection, saveSettings, tutorialSeen, type BestRecord, type Selection } from './storage';
-import { DIFFICULTIES, DIFFICULTY_LABEL, type CharacterData, type ChartData, type Difficulty, type SongData } from './types';
+import { bestKey, isDevMode, loadBest, loadSelection, loadSettings, markTutorialSeen, saveBest, saveSelection, saveSettings, setDevMode, tutorialSeen, type BestRecord, type Selection } from './storage';
+import { DIFFICULTIES, DIFFICULTY_LABEL, type CharacterData, type CharacterState, type ChartData, type Difficulty, type SongData } from './types';
 import { PlayScreen, type PlaySpec } from './ui/PlayScreen';
+import { ReactionLab } from './ui/ReactionLab';
 import { SettingsPanel } from './ui/SettingsPanel';
 
 type Screen = 'song' | 'character' | 'difficulty' | 'play' | 'practice' | 'result';
@@ -16,9 +19,9 @@ interface ResultView {
   r: SessionResult;
   prevBest: BestRecord | null;
   newBest: boolean;
+  /** 結果画面のキャラのポーズ（clear / best） */
+  pose: CharacterState;
 }
-
-const devMode = new URLSearchParams(location.search).has('dev');
 
 export default function App() {
   const [songs, setSongs] = useState<SongData[] | null>(null);
@@ -32,7 +35,10 @@ export default function App() {
   const [chart, setChart] = useState<ChartData | null>(null);
   const [buffer, setBuffer] = useState<AudioBuffer | null>(null);
   const [prepError, setPrepError] = useState<string | null>(null);
-  const [charImg, setCharImg] = useState<HTMLImageElement | null>(null);
+  const [sprites, setSprites] = useState<SpriteSet | null>(null);
+  const [devMode, setDev] = useState<boolean>(isDevMode);
+  const [selectPose, setSelectPose] = useState<string | null>(null);
+  const logoTaps = useRef({ n: 0, t: 0 });
   const [playKey, setPlayKey] = useState(0);
   const [result, setResult] = useState<ResultView | null>(null);
   const [autoplay, setAutoplay] = useState(false);
@@ -48,6 +54,7 @@ export default function App() {
       .then(([s, c]) => {
         setSongs(s);
         setChars(c);
+        c.forEach((ch) => void loadSprites(ch)); // リアクション画像は全状態をプレイ前に読み込む
         // 保存済みの選択を検証（存在しない・非公開・未実装なら既定へ）
         setSel((cur) => {
           const song = s.find((x) => x.id === cur.songId && x.available) ?? s.find((x) => x.available)!;
@@ -69,11 +76,37 @@ export default function App() {
   useEffect(() => {
     if (!character) return;
     let alive = true;
-    void loadImage(character.images.idle).then((img) => alive && setCharImg(img));
+    setSprites(null);
+    void loadSprites(character).then((sp) => alive && setSprites(sp));
     return () => {
       alive = false;
     };
   }, [character]);
+
+  // キャラ選択画面：入ったとき・選択を変えたときに select ポーズを 800ms（タイマーは画面遷移・再選択で必ず解除）
+  useEffect(() => {
+    if (screen !== 'character' || !settings.characterReactions || !sel.characterId) {
+      setSelectPose(null);
+      return;
+    }
+    setSelectPose(sel.characterId);
+    const t = setTimeout(() => setSelectPose(null), REACTION.selectMs);
+    return () => clearTimeout(t);
+  }, [screen, sel.characterId, settings.characterReactions]);
+
+  const onLogoTap = () => {
+    // 開発用メニュー：ロゴを3秒以内に5回タップで切り替え（?dev=1 でも有効）
+    const now = Date.now();
+    const r = logoTaps.current;
+    r.n = now - r.t < 3000 ? r.n + 1 : 1;
+    r.t = now;
+    if (r.n >= 5) {
+      r.n = 0;
+      const next = !devMode;
+      setDevMode(next);
+      setDev(next);
+    }
+  };
 
   // 難易度画面に来たら譜面と音源を準備
   const prepare = useCallback(async () => {
@@ -97,7 +130,7 @@ export default function App() {
   const notes = useMemo(() => (chart && song?.beatMap ? buildTimedNotes(chart, song.beatMap) : null), [chart, song]);
 
   const playSpec: PlaySpec | null = useMemo(() => {
-    if (!song || !buffer || !notes || !character) return null;
+    if (!song || !buffer || !notes || !character || !sprites) return null;
     return {
       title: song.title,
       subtitle: DIFFICULTY_LABEL[sel.difficulty],
@@ -105,18 +138,18 @@ export default function App() {
       notes,
       barLines: song.beatMap ? barLinesMs(song.beatMap) : [],
       chorusStartMs: song.chorusStartSeconds !== null ? song.chorusStartSeconds * 1000 : null,
-      character: charImg,
+      sprites,
       characterName: character.name,
       charScale: character.display?.scale,
       charOffsetY: character.display?.offsetY,
       autoplay,
     };
-  }, [song, buffer, notes, character, charImg, sel.difficulty, autoplay]);
+  }, [song, buffer, notes, character, sprites, sel.difficulty, autoplay]);
 
   const practiceSpec: PlaySpec | null = useMemo(() => {
-    if (screen !== 'practice' || !character) return null;
+    if (screen !== 'practice' || !character || !sprites) return null;
     const p = buildPractice(getAudio().ctx);
-    return { title: '操作練習', subtitle: 'タップ・同時押し・長押し', buffer: p.buffer, notes: p.notes, barLines: p.barLines, chorusStartMs: null, character: charImg, characterName: character.name, autoplay: false };
+    return { title: '操作練習', subtitle: 'タップ・同時押し・長押し', buffer: p.buffer, notes: p.notes, barLines: p.barLines, chorusStartMs: null, sprites, characterName: character.name, autoplay: false };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, playKey]);
 
@@ -143,7 +176,9 @@ export default function App() {
       saveBest(k, { score: r.score, maxCombo: r.stats.maxCombo, at: new Date().toISOString() });
       newBest = true;
     }
-    setResult({ r, prevBest: prev, newBest });
+    // 初回記録・オートプレイ・同点以下は clear、以前の記録を更新したときだけ best
+    const pose = resultState({ autoplay: r.autoplay, hadPreviousBest: prev !== null, improved: newBest });
+    setResult({ r, prevBest: prev, newBest, pose });
     setScreen('result');
   };
 
@@ -190,7 +225,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Logo />
+      <Logo onTap={onLogoTap} />
 
       {screen === 'song' && (
         <section className="screen">
@@ -229,9 +264,10 @@ export default function App() {
           <div className="step"><span className="step-no">2</span>キャラをえらぶ</div>
           <div className="cards chars">
             {chars.map((c) => (
-              <CharacterCard key={c.id} c={c} selected={c.id === sel.characterId} onSelect={() => setSel({ ...sel, characterId: c.id })} />
+              <CharacterCard key={c.id} c={c} selected={c.id === sel.characterId} posing={selectPose === c.id} onSelect={() => setSel({ ...sel, characterId: c.id })} />
             ))}
           </div>
+          {devMode && character && <ReactionLab character={character} settings={settings} />}
           <p className="note small">キャラによって得点や判定は変わりません。</p>
           <div className="footer-actions">
             <button className="btn ghost" onClick={() => setScreen('song')}>← 曲選択</button>
@@ -279,7 +315,7 @@ export default function App() {
           <div className="footer-actions">
             <button className="btn ghost" onClick={() => setScreen('character')}>← キャラ</button>
             <button className="btn ghost" onClick={() => setShowSettings(true)}>⚙ 設定</button>
-            <button className="btn ghost" onClick={() => { void getAudio().unlock(); setPlayKey((k) => k + 1); setScreen('practice'); }}>操作練習</button>
+            <button className="btn ghost" disabled={!sprites} onClick={() => { void getAudio().unlock(); setPlayKey((k) => k + 1); setScreen('practice'); }}>操作練習</button>
           </div>
           <button className="btn primary big" disabled={!playSpec} onClick={onStartPressed}>
             {playSpec ? 'スタート' : prepError ? '読み込みに失敗' : '読み込み中…'}
@@ -294,6 +330,7 @@ export default function App() {
           song={song}
           character={character}
           difficulty={sel.difficulty}
+          reactions={settings.characterReactions}
           chartVersion={chart.chartVersion}
           onRetry={startPlay}
           onBack={() => setScreen('song')}
@@ -322,10 +359,10 @@ export default function App() {
 
 const SUBTITLE = 'ミスヘブン総選挙 非公式応援リズムゲーム';
 
-function Logo() {
+function Logo({ onTap }: { onTap: () => void }) {
   const [broken, setBroken] = useState(false);
   return (
-    <header className="logo">
+    <header className="logo" onClick={onTap}>
       {broken ? (
         <div className="logo-main">BEAT <span>ON</span> STAGE</div>
       ) : (
@@ -355,12 +392,26 @@ function Jacket({ title, src, small }: { title: string; src?: string | null; sma
   );
 }
 
-function CharacterCard({ c, selected, onSelect }: { c: CharacterData; selected: boolean; onSelect: () => void }) {
+function CharacterCard({ c, selected, posing, onSelect }: { c: CharacterData; selected: boolean; posing: boolean; onSelect: () => void }) {
   const [broken, setBroken] = useState(false);
+  const [poseBroken, setPoseBroken] = useState(false);
+  const selectSrc = c.reactions?.states.select ?? null;
+  const showPose = posing && !!selectSrc && !poseBroken;
+  const src = showPose ? selectSrc : c.images.idle;
   return (
     <button className={`char-card ${selected ? 'selected' : ''}`} onClick={onSelect} aria-pressed={selected}>
       <div className="char-img">
-        {c.images.idle && !broken ? <img src={asset(c.images.idle)} alt={c.name} onError={() => setBroken(true)} /> : <div className="char-fallback">{c.name.slice(0, 1)}</div>}
+        {src && !broken ? (
+          <img
+            className={showPose ? 'rx' : ''}
+            data-reaction={showPose ? 'select' : 'idle'}
+            src={asset(src)}
+            alt={c.name}
+            onError={() => (showPose ? setPoseBroken(true) : setBroken(true))}
+          />
+        ) : (
+          <div className="char-fallback">{c.name.slice(0, 1)}</div>
+        )}
       </div>
       <div className="char-meta">
         <div className="char-name">{c.name}</div>
@@ -377,7 +428,17 @@ function CharacterCard({ c, selected, onSelect }: { c: CharacterData; selected: 
   );
 }
 
-function ResultScreen({ rv, song, character, difficulty, chartVersion, onRetry, onBack }: { rv: ResultView; song: SongData; character: CharacterData; difficulty: Difficulty; chartVersion: string; onRetry: () => void; onBack: () => void }) {
+/** 結果画面のキャラ。読めないポーズは idle → 元画像の順に代用し、全部だめなら何も出さない（操作は止めない） */
+function PoseImg({ character, state }: { character: CharacterData; state: CharacterState }) {
+  const list = poseSources(character, state);
+  const [idx, setIdx] = useState(0);
+  const src = list[idx];
+  if (!src) return null;
+  const isReaction = !!character.reactions && src !== character.images.idle;
+  return <img className={isReaction ? 'rx' : ''} data-reaction={idx === 0 ? state : 'idle'} src={asset(src)} alt={character.name} onError={() => setIdx((i) => i + 1)} />;
+}
+
+function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion, onRetry, onBack }: { rv: ResultView; song: SongData; character: CharacterData; difficulty: Difficulty; reactions: boolean; chartVersion: string; onRetry: () => void; onBack: () => void }) {
   const { r, prevBest, newBest } = rv;
   const s = r.stats;
   const diff = prevBest ? r.score - prevBest.score : null;
@@ -394,7 +455,7 @@ function ResultScreen({ rv, song, character, difficulty, chartVersion, onRetry, 
         </div>
         <div className="result-main">
           <div className="result-char">
-            {character.images.idle ? <img src={asset(character.images.idle)} alt={character.name} /> : null}
+            <PoseImg key={reactions ? rv.pose : 'idle'} character={character} state={reactions ? rv.pose : 'idle'} />
             <div className="char-name">{character.name}</div>
           </div>
           <div className="result-score">

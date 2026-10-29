@@ -46,6 +46,10 @@ export function SettingsPanel({ settings, onChange, onClose }: Props) {
           <input type="checkbox" checked={settings.showFastSlow} onChange={(e) => set('showFastSlow', e.target.checked)} />
         </label>
         <label className="row toggle">
+          <span>キャラのリアクション<small>（成功・ミス・コンボなどでポーズが変わる）</small></span>
+          <input type="checkbox" checked={settings.characterReactions} onChange={(e) => set('characterReactions', e.target.checked)} />
+        </label>
+        <label className="row toggle">
           <span>演出を減らす<small>（ライトの揺れ・弾み・サビの背景変化を止める）</small></span>
           <input type="checkbox" checked={settings.reducedEffects} onChange={(e) => set('reducedEffects', e.target.checked)} />
         </label>

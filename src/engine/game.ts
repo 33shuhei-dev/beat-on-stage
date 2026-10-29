@@ -1,8 +1,10 @@
-import { COMBO_MILESTONE, KEY_LANES, TIMING, travelMsForSpeed, type Settings } from '../config';
-import type { TimedNote } from '../types';
+import { KEY_LANES, TIMING, travelMsForSpeed, type Settings } from '../config';
+import type { CharacterState, TimedNote } from '../types';
 import type { AudioEngine } from './audio';
 import { Judge, type JudgeEvent, type JudgeStats } from './judge';
+import { isComboMilestone, ReactionController } from './reaction';
 import { computeLayout, drawFrame, type FxItem, type Layout, type RenderState } from './render';
+import type { SpriteSet } from './sprites';
 
 export type SessionState = 'countdown' | 'playing' | 'paused' | 'finished' | 'error' | 'disposed';
 
@@ -20,7 +22,8 @@ export interface SessionOptions {
   barLines: number[];
   chorusStartMs: number | null;
   settings: Settings;
-  character: HTMLImageElement | null;
+  /** キャラのリアクション画像（全状態を事前読み込み済み。読めない状態は idle、さらに無ければ代替表示） */
+  sprites: SpriteSet;
   characterName: string;
   charScale?: number;
   charOffsetY?: number;
@@ -34,6 +37,8 @@ export interface SessionOptions {
 export class GameSession {
   state: SessionState = 'countdown';
   readonly judge: Judge;
+  readonly reaction = new ReactionController();
+  private shown: CharacterState = 'idle';
   private o: SessionOptions;
   private g: CanvasRenderingContext2D;
   private layout: Layout;
@@ -59,6 +64,7 @@ export class GameSession {
   constructor(o: SessionOptions) {
     this.o = o;
     this.judge = new Judge(o.notes);
+    this.reaction.setBase('ready'); // カウントダウン中は ready
     const g = o.canvas.getContext('2d');
     if (!g) throw new Error('Canvas 2D not available');
     this.g = g;
@@ -147,6 +153,7 @@ export class GameSession {
     this.state = 'disposed';
     cancelAnimationFrame(this.raf);
     this.o.audio.stop();
+    this.reaction.reset();
     const c = this.o.canvas;
     c.removeEventListener('pointerdown', this.onPointerDown);
     c.removeEventListener('pointerup', this.onPointerUp);
@@ -165,7 +172,16 @@ export class GameSession {
   private setState(s: SessionState, info?: { message?: string }) {
     if (this.state === 'disposed') return;
     this.state = s;
+    // リアクション：カウントダウン中=ready、プレイ中=idle。停止・終了・エラーでは表示中の反応を破棄（遅れて古いポーズに戻らない）
+    if (s === 'countdown') this.reaction.setBase('ready');
+    else this.reaction.setBase('idle');
+    if (s !== 'playing') this.reaction.clearDisplay();
     this.o.onState(s, info);
+  }
+
+  /** いま舞台に出しているポーズ（テスト・確認用） */
+  reactionState(): CharacterState {
+    return this.shown;
   }
 
   private chartMsAtSong(songSec: number): number {
@@ -262,12 +278,14 @@ export class GameSession {
 
   private handle(events: JudgeEvent[]) {
     const now = performance.now();
+    const reactions = this.o.settings.characterReactions;
     for (const e of events) {
+      if (reactions) this.reaction.judge(e.grade, e.combo);
       if (e.grade !== 'miss') {
         if (e.part === 'head') this.o.audio.playHit();
         this.hitGlowAt = now;
         this.fx.push({ kind: 'burst', lane: e.lane, grade: e.grade, at: now });
-        if (this.judge.stats.combo > 0 && this.judge.stats.combo % COMBO_MILESTONE === 0) this.comboBumpAt = now;
+        if (isComboMilestone(e.combo)) this.comboBumpAt = now;
       } else this.missAt = now;
       this.fx.push({ kind: 'text', lane: e.lane, grade: e.grade, at: now, delta: e.deltaMs });
     }
@@ -332,6 +350,8 @@ export class GameSession {
     const L = this.layout;
     const pressed = this.pressedCount.map((c) => c > 0);
     const st = this.judge.states;
+    this.shown = this.o.settings.characterReactions ? this.reaction.tick(now) : 'idle';
+    const sp = this.o.sprites;
     const rs: RenderState = {
       songMs: chartMs,
       travelMs: travelMsForSpeed(this.o.settings.noteSpeed),
@@ -351,7 +371,9 @@ export class GameSession {
       reduced: this.o.settings.reducedEffects,
       showFastSlow: this.o.settings.showFastSlow,
       now,
-      character: this.o.character,
+      character: sp.get(this.shown),
+      anchorX: sp.anchorX,
+      anchorY: sp.anchorY,
       characterName: this.o.characterName,
       charScale: this.o.charScale ?? 1,
       charOffsetY: this.o.charOffsetY ?? 0,

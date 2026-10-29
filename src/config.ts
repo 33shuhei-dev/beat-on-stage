@@ -38,6 +38,8 @@ export const DEFAULT_SETTINGS = {
   hitVolume: 0.5,
   showFastSlow: true,
   reducedEffects: false,
+  /** キャラのリアクション（ポーズ切替）。OFFなら常に通常ポーズ */
+  characterReactions: true,
 };
 export type Settings = typeof DEFAULT_SETTINGS;
 
@@ -47,4 +49,30 @@ export const LANE_KEY_LABELS = ['D', 'F', 'J', 'K'];
 /** 第1段階の既定（仕様では EASY が既定だが、第1段階は NORMAL のみのため一時変更） */
 export const DEFAULT_SELECTION = { songId: 'vote', characterId: 'char_0001', difficulty: 'normal' as const };
 
-export const COMBO_MILESTONE = 25;
+/**
+ * キャラのリアクション表示（README_CLAUDE.md の初期提案値）。すべて調整可能。
+ * minGapMs: 同じ反応を連続で出さない最短間隔（発火時刻どうしの間隔）。
+ */
+export const REACTION = {
+  selectMs: 800,
+  hit: { ms: 180, minGapMs: 500 },
+  perfect: { ms: 240, minGapMs: 700 },
+  combo: { ms: 700 },
+  miss: { ms: 350 },
+  cheer: {
+    ms: 600,
+    /** ミス連続がこの回数以上のあと復帰したときだけ励ます */
+    minMissStreak: 2,
+    /** その後の連続成功数 */
+    afterSuccesses: 5,
+    /** 再発火までの最短間隔 */
+    cooldownMs: 10000,
+  },
+  /** コンボ節目：25, 50, 100, 150, 200 … */
+  comboMilestones: { first: [25, 50], everyFrom: 100, every: 50 },
+} as const;
+
+/** 譜面上の反応ポーズ画像の既定アンカー（README: キャンバス中央・足元 y=480/512） */
+export const DEFAULT_SPRITE_ANCHOR = { x: 0.5, y: 0.9375 } as const;
+/** プレイ中の舞台上キャラの表示サイズ（舞台高さに対する、512pxキャンバス一辺の倍率）。全ポーズ共通で固定 */
+export const STAGE_SPRITE_SCALE = 1.08;

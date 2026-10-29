@@ -41,7 +41,7 @@ const botScript = (mode) => {
   const codes = ['KeyD', 'KeyF', 'KeyJ', 'KeyK'];
   const pressed = new Map(); // noteId -> {pid, releaseAt}
   let pid = 100;
-  window.__botLog = { presses: 0, maxConcurrent: 0 };
+  window.__botLog = { presses: 0, maxConcurrent: 0, states: {} };
   const laneX = (lane) => {
     const r = canvas.getBoundingClientRect();
     const L = s.layout;
@@ -59,6 +59,8 @@ const botScript = (mode) => {
   const tick = () => {
     if (s.state === 'disposed' || s.state === 'finished') return;
     requestAnimationFrame(tick);
+    const rs = s.reactionState();
+    window.__botLog.states[rs] = (window.__botLog.states[rs] || 0) + 1;
     if (s.state !== 'playing' && s.state !== 'countdown') return;
     const chartMs = s.songTime() * 1000 - s.o.settings.offsetMs;
     for (const [id, p] of pressed) {
@@ -111,7 +113,10 @@ async function run(name, contextOpts, mode) {
   await page.locator('.song-card', { hasText: 'Vote Vote Vote' }).click();
   await page.getByText('このキャラで決定').waitFor();
   await page.waitForTimeout(300);
+  check(`[${name}] キャラ選択に入ると select ポーズ（800ms）`, (await page.locator('.char-img img').getAttribute('data-reaction')) === 'select');
   await shot('2-character');
+  await page.waitForTimeout(1000);
+  check(`[${name}] 800ms 後は通常ポーズへ戻る`, (await page.locator('.char-img img').getAttribute('data-reaction')) === 'idle');
   await noHScroll('キャラ選択');
   await page.getByText('このキャラで決定').click();
   await page.getByRole('button', { name: 'スタート' }).waitFor({ timeout: 20000 });
@@ -146,9 +151,14 @@ async function run(name, contextOpts, mode) {
   check(`[${name}] 一時停止中は時間が止まり音も止まる`, t1 === t2 && act1 === 0, `t=${t1.toFixed(3)}→${t2.toFixed(3)} active=${act1}`);
   const stillPaused = await page.evaluate(() => window.__bos.state);
   check(`[${name}] 自動で復帰しない`, stillPaused === 'paused');
+  const rsPaused = await page.evaluate(() => window.__bos.reactionState());
+  check(`[${name}] 一時停止中は反応を破棄して通常ポーズ（タイマー残留なし）`, rsPaused === 'idle', rsPaused);
   await shot('7-paused');
   await page.getByRole('button', { name: '再開' }).click();
   await waitState(page, 'countdown');
+  await page.waitForTimeout(150);
+  const rsResume = await page.evaluate(() => window.__bos.reactionState());
+  check(`[${name}] 再開後のカウントダウンは ready ポーズ`, rsResume === 'ready', rsResume);
   await waitState(page, 'playing', 8000);
   const t3 = await page.evaluate(() => window.__bos.songTime());
   check(`[${name}] 再開は少し巻き戻して続きから`, t3 > t1 - 3 && t3 < t1 + 1, `paused@${t1.toFixed(2)} resumed@${t3.toFixed(2)}`);
@@ -169,6 +179,12 @@ async function run(name, contextOpts, mode) {
   const r1 = await page.evaluate(() => ({ score: document.querySelector('.result-score .score').textContent, stats: window.__bos.judge.stats, bot: window.__botLog, active: window.__musicActive }));
   console.log('run1', JSON.stringify(r1));
   check(`[${name}] 結果画面が1回表示`, (await page.locator('.result-card').count()) === 1);
+  const st = r1.bot.states;
+  check(`[${name}] プレイ中に ready/idle/perfect/combo が出た`, ['ready', 'idle', 'perfect', 'combo'].every((k) => st[k] > 0), JSON.stringify(st));
+  check(`[${name}] 全PERFECTなので miss/hit/cheer は出ない`, !st.miss && !st.hit && !st.cheer, JSON.stringify(st));
+  check(`[${name}] 初回記録の結果は clear ポーズ（best にしない）`, (await page.locator('.result-char img').getAttribute('data-reaction')) === 'clear');
+  const resImg = await page.evaluate(() => { const i = document.querySelector('.result-char img'); return { ok: i.complete && i.naturalWidth > 0, w: i.naturalWidth }; });
+  check(`[${name}] 結果のキャラ画像が読めている`, resImg.ok, JSON.stringify(resImg));
   check(`[${name}] 全判定単位が判定済み`, r1.stats.judgedUnits === r1.stats.totalUnits, `${r1.stats.judgedUnits}/${r1.stats.totalUnits}`);
   check(`[${name}] ボット入力でMISSなし（入力経路・同期・同時押し・長押し＋別レーン）`, r1.stats.miss === 0, `P${r1.stats.perfect} G${r1.stats.great} g${r1.stats.good} M${r1.stats.miss}`);
   check(`[${name}] 同時に押されたのは最大2点`, r1.bot.maxConcurrent <= 2, `max=${r1.bot.maxConcurrent}`);
@@ -224,6 +240,27 @@ async function failures() {
   const ok = await page.locator('canvas').isVisible();
   check('[失敗系] キャラ画像が読めなくてもプレイ画面が動く', ok);
   await browser.close();
+
+  // 反応画像（idle 以外）が全部読めなくても、idle で代用して普通に遊べる
+  const b2 = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+  const c2 = await b2.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const p2 = await c2.newPage();
+  const errs2 = [];
+  p2.on('pageerror', (e) => errs2.push(String(e)));
+  await p2.route(/reactions\/v1\/(select|ready|hit|perfect|combo|miss|cheer|clear|best)\.png/, (r) => r.abort());
+  await p2.goto(BASE + '?dev=1');
+  await p2.locator('.song-card').first().click();
+  await p2.getByText('このキャラで決定').click();
+  await p2.getByRole('button', { name: 'スタート' }).waitFor({ timeout: 20000 });
+  await p2.locator('.row.dev input').check();
+  await p2.getByRole('button', { name: 'スタート' }).click();
+  await p2.getByText('スキップして本番へ').click().catch(() => {});
+  await p2.waitForFunction(() => window.__bos && window.__bos.state === 'playing', null, { timeout: 15000 });
+  const fb = await p2.evaluate(() => { const sp = window.__bos.o.sprites; return { comboIsIdle: sp.get('combo') === sp.get('idle') && !!sp.get('idle'), comboOk: sp.status.combo.ok, idleOk: sp.status.idle.ok }; });
+  check('[失敗系] 反応画像が読めなくても idle で代用してプレイできる', fb.comboIsIdle && !fb.comboOk && fb.idleOk, JSON.stringify(fb));
+  await p2.waitForTimeout(2500);
+  check('[失敗系] 反応画像失敗でページエラーなし', errs2.length === 0, errs2.join('|').slice(0, 200));
+  await b2.close();
 }
 
 (async () => {
