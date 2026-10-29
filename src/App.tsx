@@ -13,7 +13,10 @@ import { PlayScreen, type PlaySpec } from './ui/PlayScreen';
 import { ReactionLab } from './ui/ReactionLab';
 import { SettingsPanel } from './ui/SettingsPanel';
 
-type Screen = 'song' | 'character' | 'difficulty' | 'play' | 'practice' | 'result';
+type Screen = 'character' | 'profile' | 'song' | 'difficulty' | 'play' | 'practice' | 'result';
+
+/** 曲をそのキャラが遊べるか（専用曲は指定キャラだけ。未指定は登録キャラ全員の共通曲） */
+const playableBy = (song: SongData, characterId: string) => song.available && (!song.exclusiveCharacterId || song.exclusiveCharacterId === characterId);
 
 interface ResultView {
   r: SessionResult;
@@ -27,7 +30,7 @@ export default function App() {
   const [songs, setSongs] = useState<SongData[] | null>(null);
   const [chars, setChars] = useState<CharacterData[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [screen, setScreen] = useState<Screen>('song');
+  const [screen, setScreen] = useState<Screen>('character');
   const [sel, setSel] = useState<Selection>(loadSelection);
   const [settings, setSettingsState] = useState<Settings>(loadSettings);
   const [showSettings, setShowSettings] = useState(false);
@@ -57,8 +60,8 @@ export default function App() {
         c.forEach((ch) => void loadSprites(ch)); // リアクション画像は全状態をプレイ前に読み込む
         // 保存済みの選択を検証（存在しない・非公開・未実装なら既定へ）
         setSel((cur) => {
-          const song = s.find((x) => x.id === cur.songId && x.available) ?? s.find((x) => x.available)!;
           const ch = c.find((x) => x.id === cur.characterId) ?? c[0];
+          const song = s.find((x) => x.id === cur.songId && playableBy(x, ch?.id ?? '')) ?? s.find((x) => playableBy(x, ch?.id ?? ''))!;
           const diff = song.charts[cur.difficulty] ? cur.difficulty : (DIFFICULTIES.find((d) => song.charts[d]) ?? 'normal');
           return { songId: song.id, characterId: ch?.id ?? '', difficulty: diff };
         });
@@ -227,58 +230,81 @@ export default function App() {
     <div className="app">
       <Logo onTap={onLogoTap} />
 
-      {screen === 'song' && (
+      {screen === 'character' && (
         <section className="screen">
-          <div className="step"><span className="step-no">1</span>曲をえらぶ</div>
-          <div className="cards">
-            {songs.map((s) => (
-              <button
-                key={s.id}
-                className={`song-card ${s.available ? '' : 'disabled'} ${sel.songId === s.id ? 'selected' : ''}`}
-                disabled={!s.available}
-                aria-disabled={!s.available}
-                onClick={() => {
-                  getAudio(); // 最初の操作で音声コンテキストを生成
-                  void prefetch(s.audio);
-                  setSel({ ...sel, songId: s.id });
-                  setScreen('character');
-                }}
-              >
-                <Jacket title={s.title} src={s.jacket} />
-                <div className="song-meta">
-                  <div className="song-title">{s.title}</div>
-                  <div className="song-info">{Math.round(s.durationSeconds)}秒</div>
-                  {!s.available && <div className="badge">準備中</div>}
-                </div>
-              </button>
-            ))}
-          </div>
-          <div className="footer-actions">
-            <button className="btn ghost" onClick={() => setShowSettings(true)}>⚙ 設定</button>
-          </div>
-        </section>
-      )}
-
-      {screen === 'character' && song && (
-        <section className="screen">
-          <div className="step"><span className="step-no">2</span>キャラをえらぶ</div>
+          <div className="step"><span className="step-no">1</span>キャラをえらぶ</div>
           <div className="cards chars">
             {chars.map((c) => (
-              <CharacterCard key={c.id} c={c} selected={c.id === sel.characterId} posing={selectPose === c.id} onSelect={() => setSel({ ...sel, characterId: c.id })} />
+              <CharacterCard
+                key={c.id}
+                c={c}
+                selected={c.id === sel.characterId}
+                posing={selectPose === c.id}
+                onSelect={() => {
+                  getAudio(); // 最初の操作で音声コンテキストを生成
+                  const ok = songs.find((x) => x.id === sel.songId && playableBy(x, c.id)) ?? songs.find((x) => playableBy(x, c.id));
+                  setSel({ ...sel, characterId: c.id, songId: ok?.id ?? sel.songId });
+                }}
+                onProfile={() => {
+                  setSel({ ...sel, characterId: c.id });
+                  setScreen('profile');
+                }}
+              />
             ))}
           </div>
           {devMode && character && <ReactionLab character={character} settings={settings} />}
           <p className="note small">キャラによって得点や判定は変わりません。</p>
           <div className="footer-actions">
-            <button className="btn ghost" onClick={() => setScreen('song')}>← 曲選択</button>
-            <button className="btn primary" disabled={!character} onClick={() => setScreen('difficulty')}>このキャラで決定</button>
+            <button className="btn ghost" onClick={() => setShowSettings(true)}>⚙ 設定</button>
+            <button className="btn primary" disabled={!character} onClick={() => setScreen('song')}>このキャラで決定</button>
+          </div>
+        </section>
+      )}
+
+      {screen === 'profile' && character && <ProfileScreen c={character} onBack={() => setScreen('character')} />}
+
+      {screen === 'song' && character && (
+        <section className="screen">
+          <div className="step"><span className="step-no">2</span>曲をえらぶ</div>
+          <p className="note small">キャラ：{character.name}</p>
+          <div className="cards">
+            {songs.map((s) => {
+              const ok = playableBy(s, character.id);
+              const owner = s.exclusiveCharacterId ? chars.find((x) => x.id === s.exclusiveCharacterId)?.name : null;
+              return (
+                <button
+                  key={s.id}
+                  className={`song-card ${ok ? '' : 'disabled'} ${sel.songId === s.id ? 'selected' : ''}`}
+                  disabled={!ok}
+                  aria-disabled={!ok}
+                  onClick={() => {
+                    getAudio();
+                    void prefetch(s.audio);
+                    setSel({ ...sel, songId: s.id });
+                    setScreen('difficulty');
+                  }}
+                >
+                  <Jacket title={s.title} src={s.jacket} />
+                  <div className="song-meta">
+                    <div className="song-title">{s.title}</div>
+                    <div className="song-info">{owner ? `${owner}専用` : '共通曲'}・{Math.round(s.durationSeconds)}秒</div>
+                    {!s.available && <div className="badge">準備中</div>}
+                    {s.available && !ok && <div className="badge">{owner}専用</div>}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <div className="footer-actions">
+            <button className="btn ghost" onClick={() => setScreen('character')}>← キャラ</button>
+            <button className="btn ghost" onClick={() => setShowSettings(true)}>⚙ 設定</button>
           </div>
         </section>
       )}
 
       {screen === 'difficulty' && song && character && (
         <section className="screen">
-          <div className="step"><span className="step-no">3</span>難易度</div>
+          <div className="step"><span className="step-no">3</span>難易度をえらぶ</div>
           <div className="summary">
             <Jacket title={song.title} src={song.jacket} small />
             <div>
@@ -313,7 +339,7 @@ export default function App() {
             </label>
           )}
           <div className="footer-actions">
-            <button className="btn ghost" onClick={() => setScreen('character')}>← キャラ</button>
+            <button className="btn ghost" onClick={() => setScreen('song')}>← 曲</button>
             <button className="btn ghost" onClick={() => setShowSettings(true)}>⚙ 設定</button>
             <button className="btn ghost" disabled={!sprites} onClick={() => { void getAudio().unlock(); setPlayKey((k) => k + 1); setScreen('practice'); }}>操作練習</button>
           </div>
@@ -392,39 +418,66 @@ function Jacket({ title, src, small }: { title: string; src?: string | null; sma
   );
 }
 
-function CharacterCard({ c, selected, posing, onSelect }: { c: CharacterData; selected: boolean; posing: boolean; onSelect: () => void }) {
+function CharacterCard({ c, selected, posing, onSelect, onProfile }: { c: CharacterData; selected: boolean; posing: boolean; onSelect: () => void; onProfile: () => void }) {
   const [broken, setBroken] = useState(false);
   const [poseBroken, setPoseBroken] = useState(false);
   const selectSrc = c.reactions?.states.select ?? null;
   const showPose = posing && !!selectSrc && !poseBroken;
   const src = showPose ? selectSrc : c.images.idle;
   return (
-    <button className={`char-card ${selected ? 'selected' : ''}`} onClick={onSelect} aria-pressed={selected}>
-      <div className="char-img">
-        {src && !broken ? (
-          <img
-            className={showPose ? 'rx' : ''}
-            data-reaction={showPose ? 'select' : 'idle'}
-            src={asset(src)}
-            alt={c.name}
-            onError={() => (showPose ? setPoseBroken(true) : setBroken(true))}
-          />
-        ) : (
-          <div className="char-fallback">{c.name.slice(0, 1)}</div>
-        )}
+    <div className={`char-card ${selected ? 'selected' : ''}`}>
+      <button className="char-main" onClick={onSelect} aria-pressed={selected}>
+        <div className="char-img">
+          {src && !broken ? (
+            <img
+              className={showPose ? 'rx' : ''}
+              data-reaction={showPose ? 'select' : 'idle'}
+              src={asset(src)}
+              alt={c.name}
+              onError={() => (showPose ? setPoseBroken(true) : setBroken(true))}
+            />
+          ) : (
+            <div className="char-fallback">{c.name.slice(0, 1)}</div>
+          )}
+        </div>
+        <div className="char-meta">
+          <div className="char-name">{c.name}</div>
+          <div className="char-type">{c.participationType}</div>
+        </div>
+      </button>
+      <button className="btn mini char-profile" onClick={onProfile}>プロフィール</button>
+    </div>
+  );
+}
+
+/** プロフィール（サイト内表示）。未提供の項目は出さない。外部リンクは押したときだけ別タブで開く */
+function ProfileScreen({ c, onBack }: { c: CharacterData; onBack: () => void }) {
+  const [broken, setBroken] = useState(false);
+  const rows: [string, string][] = [['区分', c.participationType]];
+  if (c.affiliation) rows.push(['所属', c.affiliation]);
+  return (
+    <section className="screen profile">
+      <div className="step"><span className="step-no">★</span>プロフィール</div>
+      <div className="profile-card">
+        <div className="profile-img">
+          {c.images.idle && !broken ? <img src={asset(c.images.idle)} alt={c.name} onError={() => setBroken(true)} /> : <div className="char-fallback">{c.name.slice(0, 1)}</div>}
+        </div>
+        <h2 className="profile-name">{c.name}</h2>
+        <dl className="profile-rows">
+          {rows.map(([k, v]) => (
+            <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
+          ))}
+        </dl>
+        {c.bio && <p className="profile-bio">{c.bio}</p>}
+        <p className="note small">紹介文などは準備中です。</p>
+        {c.xUrl && <a className="btn" href={c.xUrl} target="_blank" rel="noopener noreferrer">X を見る（別タブで開きます）</a>}
+        {c.links?.map((l) => (
+          <a key={l.url} className="btn primary" href={l.url} target="_blank" rel="noopener noreferrer">{l.label}</a>
+        ))}
+        {(c.links?.length || c.xUrl) && <p className="note small">外部サイトは別タブで開きます。</p>}
       </div>
-      <div className="char-meta">
-        <div className="char-name">{c.name}</div>
-        <div className="char-type">{c.participationType}</div>
-        {c.affiliation && <div className="char-aff">{c.affiliation}</div>}
-        {c.bio && <div className="char-bio">{c.bio}</div>}
-        {c.xUrl && (
-          <a className="char-x" href={c.xUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-            X を見る
-          </a>
-        )}
-      </div>
-    </button>
+      <div className="footer-actions"><button className="btn ghost" onClick={onBack}>← 戻る</button></div>
+    </section>
   );
 }
 

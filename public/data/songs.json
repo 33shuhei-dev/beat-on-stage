@@ -187,11 +187,12 @@
    73.9224
   ],
   "charts": {
-   "easy": null,
+   "easy": "data/charts/vote.easy.json",
    "normal": "data/charts/vote.normal.json",
-   "hard": null
+   "hard": "data/charts/vote.hard.json"
   },
-  "jacket": "assets/jackets/vote.png"
+  "jacket": "assets/jackets/vote.png",
+  "exclusiveCharacterId": null
  },
  {
   "id": "yobuyo",
@@ -434,10 +435,11 @@
    79.3308
   ],
   "charts": {
-   "easy": null,
+   "easy": "data/charts/yobuyo.easy.json",
    "normal": "data/charts/yobuyo.normal.json",
-   "hard": null
+   "hard": "data/charts/yobuyo.hard.json"
   },
-  "jacket": "assets/jackets/yobuyo.png"
+  "jacket": "assets/jackets/yobuyo.png",
+  "exclusiveCharacterId": "char_0001"
  }
 ]

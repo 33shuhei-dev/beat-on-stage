@@ -46,8 +46,8 @@ export type Settings = typeof DEFAULT_SETTINGS;
 export const KEY_LANES: Record<string, number> = { KeyD: 0, KeyF: 1, KeyJ: 2, KeyK: 3 };
 export const LANE_KEY_LABELS = ['D', 'F', 'J', 'K'];
 
-/** 第1段階の既定（仕様では EASY が既定だが、第1段階は NORMAL のみのため一時変更） */
-export const DEFAULT_SELECTION = { songId: 'vote', characterId: 'char_0001', difficulty: 'normal' as const };
+/** 既定の選択（初めての人向けに EASY） */
+export const DEFAULT_SELECTION = { songId: 'vote', characterId: 'char_0001', difficulty: 'easy' as const };
 
 /**
  * キャラのリアクション表示（README_CLAUDE.md の初期提案値）。すべて調整可能。

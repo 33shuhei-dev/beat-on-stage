@@ -104,25 +104,51 @@ async function run(name, contextOpts, mode) {
     check(`[${name}] 横スクロールなし: ${label}`, sw <= W, `scrollWidth=${sw}`);
   };
 
+  const external = [];
+  page.on('request', (r) => /yuzu-gakari/.test(r.url()) && external.push(r.url()));
   await page.goto(BASE + '?dev=1');
-  await page.getByText('Vote Vote Vote').first().waitFor();
-  await shot('1-song');
-  await noHScroll('曲選択');
-  const yobuyoEnabled = await page.locator('.song-card', { hasText: '何度でも呼ぶよ' }).isEnabled();
-  check(`[${name}] 2曲目（何度でも呼ぶよ）が選べる`, yobuyoEnabled);
-  await page.locator('.song-card', { hasText: 'Vote Vote Vote' }).click();
-  await page.getByText('このキャラで決定').waitFor();
+  await page.getByText('キャラをえらぶ').first().waitFor();
   await page.waitForTimeout(300);
+  check(`[${name}] 最初の画面はキャラ選択（キャラ→曲→難易度）`, await page.locator('.char-card').first().isVisible());
   check(`[${name}] キャラ選択に入ると select ポーズ（800ms）`, (await page.locator('.char-img img').getAttribute('data-reaction')) === 'select');
-  await shot('2-character');
+  await shot('1-character');
   await page.waitForTimeout(1000);
   check(`[${name}] 800ms 後は通常ポーズへ戻る`, (await page.locator('.char-img img').getAttribute('data-reaction')) === 'idle');
   await noHScroll('キャラ選択');
+
+  // プロフィール：サイト内表示。外部リンクは押したときだけ別タブ
+  await page.getByRole('button', { name: 'プロフィール' }).click();
+  await page.getByText('ゆず係を見る').waitFor();
+  await shot('1b-profile');
+  await noHScroll('プロフィール');
+  const link = page.getByRole('link', { name: 'ゆず係を見る' });
+  check(`[${name}] ゆず係リンクの宛先・別タブ・noopener`, (await link.getAttribute('href')) === 'https://yuzu-gakari.vercel.app' && (await link.getAttribute('target')) === '_blank' && /noopener/.test((await link.getAttribute('rel')) || ''));
+  check(`[${name}] 押すまで外部への通信なし／サイト内表示のまま`, external.length === 0 && page.url().startsWith(BASE));
+  const profileText = await page.locator('.profile-card').innerText();
+  check(`[${name}] 未提供の情報（所属・紹介文・X）は出さず「準備中」と表示`, !/所属/.test(profileText) && !/@|x\.com|twitter/i.test(profileText) && /準備中/.test(profileText), profileText.replace(/\n/g, ' ').slice(0, 80));
+  const [popup] = await Promise.all([ctx.waitForEvent('page', { timeout: 8000 }).catch(() => null), link.click()]);
+  // 実行環境は外部サイトに届かないので、開いた先のURLは問わず「別タブが開いた」ことだけ見る（宛先はhrefで確認済み）
+  check(`[${name}] 押したときだけ別タブで開く`, !!popup, popup ? '別タブが開いた' : 'no popup');
+  if (popup) await popup.close().catch(() => {});
+  check(`[${name}] 元のタブはサイト内のまま`, page.url().startsWith(BASE) && (await page.getByText('プロフィール').first().isVisible()));
+  await page.getByRole('button', { name: '← 戻る' }).click();
+  await page.getByText('このキャラで決定').waitFor();
+
   await page.getByText('このキャラで決定').click();
+  await page.locator('.song-card').first().waitFor();
+  const vEn = await page.locator('.song-card', { hasText: 'Vote Vote Vote' }).isEnabled();
+  const yEn = await page.locator('.song-card', { hasText: '何度でも呼ぶよ' }).isEnabled();
+  check(`[${name}] ゆずちゃんは 共通曲・専用曲の両方を選べる`, vEn && yEn);
+  const infos = await page.locator('.song-info').allInnerTexts();
+  check(`[${name}] 曲カードに「共通曲」「ゆずちゃん専用」を表示`, infos.some((t) => t.includes('共通曲')) && infos.some((t) => t.includes('ゆずちゃん専用')), infos.join('|'));
+  await shot('2-song');
+  await noHScroll('曲選択');
+  await page.locator('.song-card', { hasText: 'Vote Vote Vote' }).click();
   await page.getByRole('button', { name: 'スタート' }).waitFor({ timeout: 20000 });
-  const easyDisabled = await page.locator('.diff.easy').isDisabled();
-  const hardDisabled = await page.locator('.diff.hard').isDisabled();
-  check(`[${name}] EASY/HARD は準備中で押せない`, easyDisabled && hardDisabled);
+  const ds = await page.locator('.diff').evaluateAll((els) => els.map((e) => e.disabled));
+  check(`[${name}] EASY / NORMAL / HARD がすべて選べる`, ds.length === 3 && ds.every((x) => !x), JSON.stringify(ds));
+  check(`[${name}] 既定の難易度は EASY`, /selected/.test((await page.locator('.diff.easy').getAttribute('class')) || ''));
+  await page.locator('.diff.normal').click();
   await shot('3-difficulty');
   await noHScroll('難易度');
 
@@ -181,7 +207,7 @@ async function run(name, contextOpts, mode) {
   check(`[${name}] 結果画面が1回表示`, (await page.locator('.result-card').count()) === 1);
   const st = r1.bot.states;
   check(`[${name}] プレイ中に ready/idle/perfect/combo が出た`, ['ready', 'idle', 'perfect', 'combo'].every((k) => st[k] > 0), JSON.stringify(st));
-  check(`[${name}] 全PERFECTなので miss/hit/cheer は出ない`, !st.miss && !st.hit && !st.cheer, JSON.stringify(st));
+  check(`[${name}] 全PERFECTなので miss/hit/cheer は出ない（ボットの押し遅れでGREATが混ざった回は hit を許容）`, !st.miss && !st.cheer && (r1.stats.perfect === r1.stats.totalUnits ? !st.hit : true), JSON.stringify(st));
   check(`[${name}] 初回記録の結果は clear ポーズ（best にしない）`, (await page.locator('.result-char img').getAttribute('data-reaction')) === 'clear');
   const resImg = await page.evaluate(() => { const i = document.querySelector('.result-char img'); return { ok: i.complete && i.naturalWidth > 0, w: i.naturalWidth }; });
   check(`[${name}] 結果のキャラ画像が読めている`, resImg.ok, JSON.stringify(resImg));
@@ -217,46 +243,89 @@ async function run(name, contextOpts, mode) {
 }
 
 
-// 2曲目（何度でも呼ぶよ）をボットで通す：音源・テンポ表・譜面・結果・自己ベスト（曲ごとに別キー）
-async function songTwo() {
-  const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+// 全6譜面（2曲×EASY/NORMAL/HARD）をボットで通す：開始→プレイ→結果→（1本目だけ）リトライ
+const SONGS = [['Vote Vote Vote', 'vote'], ['何度でも呼ぶよ', 'yobuyo']];
+const DIFFS = [['easy', 'EASY'], ['normal', 'NORMAL'], ['hard', 'HARD']];
+async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
   await ctx.addInitScript(initScript);
+  await ctx.addInitScript(() => { try { localStorage.setItem('bos:v1:tutorialSeen', 'true'); } catch {} });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
-  const N = '[何度でも呼ぶよ]';
+  const N = `[${songId}/${diff}]`;
   await page.goto(BASE + '?dev=1');
-  await page.locator('.song-card', { hasText: '何度でも呼ぶよ' }).click();
   await page.getByText('このキャラで決定').click();
+  await page.locator('.song-card', { hasText: songLabel }).click();
   await page.getByRole('button', { name: 'スタート' }).waitFor({ timeout: 20000 });
-  await page.screenshot({ path: path.join(OUT, 'song2-difficulty.png') });
-  const easyOff = await page.locator('.diff.easy').isDisabled();
-  check(`${N} EASY/HARD は準備中のまま`, easyOff && (await page.locator('.diff.hard').isDisabled()));
+  await page.locator(`.diff.${diff}`).click();
+  await page.getByText(/自己ベスト|未プレイ/).first().waitFor();
+  await page.getByRole('button', { name: 'スタート' }).waitFor();
+  await page.waitForFunction(() => !document.querySelector('button.big')?.disabled, null, { timeout: 20000 });
   await page.getByRole('button', { name: 'スタート' }).click();
-  await page.getByText('はじめての方へ').waitFor();
-  await page.getByText('スキップして本番へ').click();
   await waitState(page, 'countdown');
   await page.evaluate(botScript, 'pointer');
   await waitState(page, 'playing', 8000);
-  const meta = await page.evaluate(() => ({ notes: window.__bos.judge.states.length, last: window.__bos.judge.states.at(-1).note.t }));
-  await page.waitForFunction(() => window.__bos.songTime() > 40, null, { timeout: 60000 });
-  await page.screenshot({ path: path.join(OUT, 'song2-play.png') });
-  await page.locator('.result-card').waitFor({ timeout: 80000 });
+  const meta = await page.evaluate(() => ({ notes: window.__bos.judge.states.length, last: Math.max(...window.__bos.judge.states.map((s) => s.note.end ?? s.note.t)) }));
+  await page.waitForFunction(() => window.__bos.songTime() > 30, null, { timeout: 60000 });
+  await page.screenshot({ path: path.join(OUT, `play-${songId}-${diff}.png`) });
+  await page.locator('.result-card').waitFor({ timeout: 90000 });
   await page.waitForTimeout(400);
-  await page.screenshot({ path: path.join(OUT, 'song2-result.png') });
-  const r = await page.evaluate(() => ({ score: document.querySelector('.result-score .score').textContent, stats: window.__bos.judge.stats, bot: window.__botLog, active: window.__musicActive, title: document.querySelector('.result-card').innerText.slice(0, 40) }));
-  console.log('song2', JSON.stringify({ ...r, ...meta }));
-  check(`${N} 結果に曲名が出る`, r.title.includes('何度でも呼ぶよ'), r.title.replace(/\n/g, ' '));
+  await page.screenshot({ path: path.join(OUT, `result-${songId}-${diff}.png`) });
+  const r = await page.evaluate(() => ({ stats: window.__bos.judge.stats, bot: window.__botLog, active: window.__musicActive, head: document.querySelector('.result-card').innerText.slice(0, 60) }));
+  console.log(N, JSON.stringify({ notes: meta.notes, units: r.stats.totalUnits, P: r.stats.perfect, G: r.stats.great, g: r.stats.good, M: r.stats.miss, maxConcurrent: r.bot.maxConcurrent }));
+  check(`${N} 結果に曲名・難易度が出る`, r.head.includes(songLabel) && r.head.includes(diffLabel), r.head.replace(/\n/g, ' '));
   check(`${N} 全判定単位が判定済み`, r.stats.judgedUnits === r.stats.totalUnits, `${r.stats.judgedUnits}/${r.stats.totalUnits}`);
-  check(`${N} ボット入力でMISSなし（テンポ表と譜面の同期・同時押し・長押し）`, r.stats.miss === 0, `P${r.stats.perfect} G${r.stats.great} g${r.stats.good} M${r.stats.miss}`);
+  check(`${N} ボット入力でMISSなし・全PERFECT`, r.stats.miss === 0 && r.stats.perfect === r.stats.totalUnits, `P${r.stats.perfect} G${r.stats.great} g${r.stats.good} M${r.stats.miss}`);
   check(`${N} 同時に押されたのは最大2点`, r.bot.maxConcurrent <= 2, `max=${r.bot.maxConcurrent}`);
-  check(`${N} 最後のノーツはフェード（77秒）前`, meta.last < 77000, `last=${(meta.last / 1000).toFixed(2)}s`);
+  check(`${N} 最後のノーツ・長押しはフェード開始前`, meta.last < (songId === 'vote' ? 72000 : 77000), `last=${(meta.last / 1000).toFixed(2)}s`);
   const best = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.includes('best')));
-  check(`${N} 自己ベストは曲ごとに別キー`, best.length === 1 && best[0].includes('yobuyo'), JSON.stringify(best));
+  check(`${N} 自己ベストは 曲×難易度×譜面版 のキー`, best.length === 1 && best[0] === `bos:v1:best:${songId}:${diff}:0.1.0-draft`, JSON.stringify(best));
   check(`${N} 終了後に音声ノードが残らない`, r.active === 0);
+  if (retry) {
+    await page.getByRole('button', { name: 'もう一度' }).click();
+    await waitState(page, 'countdown');
+    await page.waitForTimeout(3800);
+    check(`${N} 即リトライで音声は1本だけ`, (await page.evaluate(() => window.__musicActive)) === 1);
+    await page.evaluate(() => window.__bos.pause());
+    await page.getByRole('button', { name: '選曲へ戻る' }).click();
+    await page.locator('.song-card').first().waitFor();
+    check(`${N} 選曲へ戻ると音が止まる`, (await page.evaluate(() => window.__musicActive)) === 0);
+  }
   check(`${N} コンソールエラーなし`, errors.length === 0, errors.join(' | ').slice(0, 300));
+  await ctx.close();
+}
+async function allCharts() {
+  const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+  for (const [label, id] of SONGS) for (const [d, dl] of DIFFS) await oneChart(browser, label, id, d, dl, d === 'easy');
+  await browser.close();
+}
+
+// 専用曲：2人目のキャラを差し込んで、ゆずちゃん専用曲が他キャラでは選べず、共通曲は選べることを確認
+async function exclusive() {
+  const browser = await chromium.launch();
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const page = await ctx.newPage();
+  await page.route('**/data/characters.json', async (r) => {
+    const res = await r.fetch();
+    const list = await res.json();
+    await r.fulfill({ response: res, json: [...list, { ...list[0], id: 'char_9999', name: 'テストちゃん', links: [] }] });
+  });
+  await page.goto(BASE);
+  await page.locator('.char-card').nth(1).waitFor();
+  await page.locator('.char-card').nth(1).locator('.char-main').click();
+  await page.getByText('このキャラで決定').click();
+  await page.locator('.song-card').first().waitFor();
+  const y = page.locator('.song-card', { hasText: '何度でも呼ぶよ' });
+  const v = page.locator('.song-card', { hasText: 'Vote Vote Vote' });
+  await page.screenshot({ path: path.join(OUT, 'exclusive-other-char.png') });
+  check('[専用曲] 他のキャラでは「何度でも呼ぶよ」は選べない（ゆずちゃん専用の表示）', (await y.isDisabled()) && /ゆずちゃん専用/.test(await y.innerText()));
+  check('[専用曲] 他のキャラでも共通曲は選べる', await v.isEnabled());
+  await page.getByRole('button', { name: '← キャラ' }).click();
+  await page.locator('.char-card').first().locator('.char-main').click();
+  await page.getByText('このキャラで決定').click();
+  check('[専用曲] ゆずちゃんに戻すと専用曲が選べる', await page.locator('.song-card', { hasText: '何度でも呼ぶよ' }).isEnabled());
   await browser.close();
 }
 
@@ -268,8 +337,8 @@ async function failures() {
   await page.route('**/idle.png', (r) => r.abort());
   await page.route('**/vote.mp3', (r) => r.fulfill({ status: 404, body: 'x' }));
   await page.goto(BASE);
-  await page.locator('.song-card').first().click();
   await page.getByText('このキャラで決定').click();
+  await page.locator('.song-card').first().click();
   await page.getByText(/読み込みに失敗/).first().waitFor({ timeout: 10000 });
   await page.screenshot({ path: path.join(OUT, 'fail-audio.png') });
   check('[失敗系] 音源の読込失敗を表示し、黙って進めない', await page.getByRole('button', { name: '再試行' }).isVisible());
@@ -293,8 +362,8 @@ async function failures() {
   p2.on('pageerror', (e) => errs2.push(String(e)));
   await p2.route(/reactions\/v1\/(select|ready|hit|perfect|combo|miss|cheer|clear|best)\.png/, (r) => r.abort());
   await p2.goto(BASE + '?dev=1');
-  await p2.locator('.song-card').first().click();
   await p2.getByText('このキャラで決定').click();
+  await p2.locator('.song-card').first().click();
   await p2.getByRole('button', { name: 'スタート' }).waitFor({ timeout: 20000 });
   await p2.locator('.row.dev input').check();
   await p2.getByRole('button', { name: 'スタート' }).click();
@@ -310,7 +379,8 @@ async function failures() {
 (async () => {
   await run('mobile390', { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true }, 'pointer');
   await run('pc', { viewport: { width: 1280, height: 800 } }, 'key');
-  await songTwo();
+  await exclusive();
+  await allCharts();
   await failures();
   fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(results, null, 1));
   const bad = results.filter((r) => !r.ok);

@@ -7,7 +7,7 @@
   "bio": null,
   "xUrl": null,
   "enabledInPrototype": true,
-  "publicReleaseApproved": false,
+  "publicReleaseApproved": true,
   "assetVersion": "v001",
   "images": {
    "idle": "assets/characters/char_0001/idle.png"
@@ -41,6 +41,13 @@
     "clear": "assets/characters/char_0001/reactions/v1/clear.png",
     "best": "assets/characters/char_0001/reactions/v1/best.png"
    }
-  }
+  },
+  "links": [
+   {
+    "label": "ゆず係を見る",
+    "url": "https://yuzu-gakari.vercel.app"
+   }
+  ],
+  "publicReleaseNote": "2026-10-29 ユーザー（制作者）の指示により一般公開を承認"
  }
 ]

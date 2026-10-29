@@ -4,3 +4,4 @@ test-results
 *.wav
 .DS_Store
 dist-artifact
+.deploy

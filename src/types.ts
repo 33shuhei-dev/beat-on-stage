@@ -15,6 +15,8 @@ export interface SongData {
   tempoAnalysis: { status: string; listeningVerified: boolean; summary: string; bpmStart: number; bpmEnd: number } | null;
   firstBeatSeconds: number | null;
   chorusStartSeconds: number | null;
+  /** 専用曲：このキャラだけが遊べる。null/未設定は登録キャラ全員の共通曲 */
+  exclusiveCharacterId?: string | null;
   beatMap: number[] | null;
   charts: Record<Difficulty, string | null>;
 }
@@ -40,6 +42,8 @@ export interface CharacterData {
   affiliation: string | null;
   bio: string | null;
   xUrl: string | null;
+  /** プロフィールから開く外部リンク（明示的に押したときだけ別タブで開く） */
+  links?: { label: string; url: string }[];
   enabledInPrototype: boolean;
   publicReleaseApproved: boolean;
   assetVersion: string;
