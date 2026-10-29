@@ -285,3 +285,8 @@ body { word-break: auto-phrase; line-break: strict; }
 .listen-time { font-variant-numeric: tabular-nums; font-size: 13px; }
 .listen-load { font-size: 12px; opacity: 0.7; }
 .listen-error { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; }
+
+/* 結果画面の移動ボタン */
+.next-diff { background: linear-gradient(135deg, #ffd86b, #ff9f4a); color: #2a1200; border-color: transparent; font-weight: 800; }
+.result-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.result-nav .btn { padding-left: 4px; padding-right: 4px; white-space: nowrap; }

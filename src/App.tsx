@@ -136,7 +136,8 @@ export default function App() {
     if (screen === 'difficulty') void prepare();
   }, [screen, prepare]);
 
-  const notes = useMemo(() => (chart && song?.beatMap ? buildTimedNotes(chart, song.beatMap) : null), [chart, song]);
+  // 難易度や曲を切り替えた直後に、読み込み前の別譜面で始めないよう、選択と一致する譜面だけ使う
+  const notes = useMemo(() => (chart && song?.beatMap && chart.songId === song.id && chart.difficulty === sel.difficulty ? buildTimedNotes(chart, song.beatMap) : null), [chart, song, sel.difficulty]);
 
   const playSpec: PlaySpec | null = useMemo(() => {
     if (!song || !buffer || !notes || !character || !sprites) return null;
@@ -366,7 +367,10 @@ export default function App() {
           reactions={settings.characterReactions}
           chartVersion={chart.chartVersion}
           onRetry={startPlay}
+          onNextDifficulty={(d) => { setSel({ ...sel, difficulty: d }); setScreen('difficulty'); }}
+          onPickDifficulty={() => setScreen('difficulty')}
           onBack={() => setScreen('song')}
+          onTop={() => setScreen('character')}
         />
       )}
 
@@ -509,7 +513,9 @@ function PoseImg({ character, state }: { character: CharacterData; state: Charac
   return <img className={isReaction ? 'rx' : ''} data-reaction={idx === 0 ? state : 'idle'} src={asset(src)} alt={character.name} onError={() => setIdx((i) => i + 1)} />;
 }
 
-function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion, onRetry, onBack }: { rv: ResultView; song: SongData; character: CharacterData; difficulty: Difficulty; reactions: boolean; chartVersion: string; onRetry: () => void; onBack: () => void }) {
+function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion, onRetry, onNextDifficulty, onPickDifficulty, onBack, onTop }: { rv: ResultView; song: SongData; character: CharacterData; difficulty: Difficulty; reactions: boolean; chartVersion: string; onRetry: () => void; onNextDifficulty: (d: Difficulty) => void; onPickDifficulty: () => void; onBack: () => void; onTop: () => void }) {
+  const next = DIFFICULTIES[DIFFICULTIES.indexOf(difficulty) + 1] as Difficulty | undefined;
+  const nextOk = !!next && !!song.charts[next];
   const { r, prevBest, newBest } = rv;
   const s = r.stats;
   const diff = prevBest ? r.score - prevBest.score : null;
@@ -557,7 +563,12 @@ function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion
         <a className="btn ghost" href={character.xUrl} target="_blank" rel="noopener noreferrer">{character.name} の X を見る</a>
       )}
       <button className="btn primary big" onClick={onRetry}>もう一度</button>
-      <button className="btn ghost" onClick={onBack}>選曲へ</button>
+      {nextOk && <button className="btn big next-diff" onClick={() => onNextDifficulty(next!)}>難易度を上げる（{DIFFICULTY_LABEL[next!]}）</button>}
+      <div className="result-nav">
+        <button className="btn ghost" onClick={onPickDifficulty}>難易度選択</button>
+        <button className="btn ghost" onClick={onBack}>選曲へ</button>
+        <button className="btn ghost" onClick={onTop}>TOPへ</button>
+      </div>
     </section>
   );
 }
