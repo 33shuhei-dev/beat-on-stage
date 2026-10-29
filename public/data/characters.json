@@ -1,0 +1,26 @@
+[
+ {
+  "id": "char_0001",
+  "name": "ゆずちゃん",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "enabledInPrototype": true,
+  "publicReleaseApproved": false,
+  "assetVersion": "v001",
+  "images": {
+   "idle": "assets/characters/char_0001/idle.png",
+   "hit": null,
+   "combo": null,
+   "miss": null,
+   "cheer": null,
+   "clear": null
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  }
+ }
+]
