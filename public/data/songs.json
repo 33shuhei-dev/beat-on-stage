@@ -455,7 +455,7 @@
    "endSeconds": 80
   },
   "audio": "assets/audio/kimi_ga_warau_hou_e.mp3",
-  "jacket": null,
+  "jacket": "assets/jackets/kimi_ga_warau_hou_e.png",
   "available": true,
   "bpm": null,
   "tempoAnalysis": {
