@@ -11,13 +11,13 @@ function frame(c: ReactionController, now: number, ...ev: ['perfect' | 'great' |
 
 describe('優先順位', () => {
   it('README の順序どおり', () => {
-    const order = ['best', 'clear', 'ready', 'select', 'combo', 'cheer', 'miss', 'perfect', 'hit', 'idle'] as const;
+    const order = ['best', 'clear', 'ready', 'select', 'miss', 'combo', 'cheer', 'perfect', 'hit', 'idle'] as const;
     for (let i = 1; i < order.length; i++) expect(PRIORITY[order[i - 1]]).toBeGreaterThanOrEqual(PRIORITY[order[i]]);
     expect(PRIORITY.ready).toBeGreaterThan(PRIORITY.select);
-    expect(PRIORITY.select).toBeGreaterThan(PRIORITY.combo);
+    expect(PRIORITY.select).toBeGreaterThan(PRIORITY.miss);
+    expect(PRIORITY.miss).toBeGreaterThan(PRIORITY.combo);
     expect(PRIORITY.combo).toBeGreaterThan(PRIORITY.cheer);
-    expect(PRIORITY.cheer).toBeGreaterThan(PRIORITY.miss);
-    expect(PRIORITY.miss).toBeGreaterThan(PRIORITY.perfect);
+    expect(PRIORITY.cheer).toBeGreaterThan(PRIORITY.perfect);
     expect(PRIORITY.perfect).toBeGreaterThan(PRIORITY.hit);
     expect(PRIORITY.hit).toBeGreaterThan(PRIORITY.idle);
   });
@@ -89,11 +89,17 @@ describe('優先度の競合（待ち行列なし）', () => {
     expect(c.tick(700)).toBe('idle'); // 捨てた反応を後から出さない
     expect(c.tick(701)).toBe('idle');
   });
-  it('combo 表示中の miss も優先度で捨てられる（高優先を壊さない）', () => {
+  it('combo 表示中でも miss が出たら miss に切り替わる', () => {
     const c = mk();
     frame(c, 0, ['perfect', 50]);
-    expect(frame(c, 100, ['miss', 0])).toBe('combo');
-    expect(c.tick(700)).toBe('idle');
+    expect(frame(c, 100, ['miss', 0])).toBe('miss');
+    expect(c.tick(449)).toBe('miss');
+    expect(c.tick(451)).toBe('idle'); // combo の残りは再生しない
+  });
+  it('miss 表示中に節目コンボが来ても miss を隠さない', () => {
+    const c = mk();
+    frame(c, 0, ['miss', 0]);
+    expect(frame(c, 100, ['perfect', 25])).toBe('miss');
   });
   it('perfect 表示中に combo が来たら combo に置き換わる', () => {
     const c = mk();

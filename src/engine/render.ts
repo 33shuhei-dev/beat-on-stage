@@ -263,19 +263,20 @@ function drawLanes(g: CanvasRenderingContext2D, L: Layout, s: RenderState) {
       g.textAlign = 'left';
     }
   }
-  // コンボ（控えめ）
+  // コンボ：ノーツ領域にもキャラにも重ならない、舞台左下（キャラの左・名前プレートの反対側）に置く
   if (s.combo >= 5) {
     const dt = s.now - s.comboBumpAt;
     const sc = !s.reduced && dt >= 0 && dt < 200 ? 1 + 0.12 * Math.sin((dt / 200) * Math.PI) : 1;
     g.save();
-    g.translate(laneX + laneW * 2, top + (judgeY - top) * 0.42);
+    g.translate(laneX + 14, L.stageH * 0.74);
     g.scale(sc, sc);
-    g.textAlign = 'center';
-    g.fillStyle = 'rgba(255,235,255,0.22)';
-    g.font = '800 44px system-ui, sans-serif';
+    g.textAlign = 'left';
+    g.fillStyle = 'rgba(255,235,255,0.85)';
+    g.font = '800 34px system-ui, sans-serif';
     g.fillText(String(s.combo), 0, 0);
-    g.font = '700 12px system-ui, sans-serif';
-    g.fillText('COMBO', 0, 18);
+    g.fillStyle = 'rgba(255,220,250,0.6)';
+    g.font = '700 11px system-ui, sans-serif';
+    g.fillText('COMBO', 2, 15);
     g.restore();
   }
 }

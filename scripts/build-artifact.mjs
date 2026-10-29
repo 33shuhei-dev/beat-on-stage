@@ -11,8 +11,8 @@ const scripts = [...head.matchAll(/<script[\s\S]*?<\/script>/g)].map((m) => m[0]
 const page = `${title}\n<meta name="claude:viewport-fit-sides" content="cover">\n<meta name="theme-color" content="#0f0420">\n${styles}\n${body.trim()}\n${scripts}\n`
 writeFileSync(`${out}/page.html`, page)
 const files = [
-  'data/songs.json', 'data/characters.json', 'data/charts/vote.normal.json',
-  'assets/audio/vote.mp3', 'assets/characters/char_0001/idle.png',
+  'data/songs.json', 'data/characters.json', 'data/charts/vote.normal.json', 'data/charts/yobuyo.normal.json',
+  'assets/audio/vote.mp3', 'assets/audio/yobuyo.mp3', 'assets/characters/char_0001/idle.png',
   'assets/brand/logo.png', 'assets/jackets/vote.png', 'assets/jackets/yobuyo.png',
   ...['idle', 'select', 'ready', 'hit', 'perfect', 'combo', 'miss', 'cheer', 'clear', 'best'].map((k) => `assets/characters/char_0001/reactions/v1/${k}.png`),
 ]

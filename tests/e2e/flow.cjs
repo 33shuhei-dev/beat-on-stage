@@ -108,8 +108,8 @@ async function run(name, contextOpts, mode) {
   await page.getByText('Vote Vote Vote').first().waitFor();
   await shot('1-song');
   await noHScroll('曲選択');
-  const yobuyoDisabled = await page.locator('.song-card', { hasText: '何度でも呼ぶよ' }).isDisabled();
-  check(`[${name}] 2曲目は準備中で押せない`, yobuyoDisabled);
+  const yobuyoEnabled = await page.locator('.song-card', { hasText: '何度でも呼ぶよ' }).isEnabled();
+  check(`[${name}] 2曲目（何度でも呼ぶよ）が選べる`, yobuyoEnabled);
   await page.locator('.song-card', { hasText: 'Vote Vote Vote' }).click();
   await page.getByText('このキャラで決定').waitFor();
   await page.waitForTimeout(300);
@@ -216,6 +216,50 @@ async function run(name, contextOpts, mode) {
   await browser.close();
 }
 
+
+// 2曲目（何度でも呼ぶよ）をボットで通す：音源・テンポ表・譜面・結果・自己ベスト（曲ごとに別キー）
+async function songTwo() {
+  const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+  await ctx.addInitScript(initScript);
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(String(e)));
+  page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  const N = '[何度でも呼ぶよ]';
+  await page.goto(BASE + '?dev=1');
+  await page.locator('.song-card', { hasText: '何度でも呼ぶよ' }).click();
+  await page.getByText('このキャラで決定').click();
+  await page.getByRole('button', { name: 'スタート' }).waitFor({ timeout: 20000 });
+  await page.screenshot({ path: path.join(OUT, 'song2-difficulty.png') });
+  const easyOff = await page.locator('.diff.easy').isDisabled();
+  check(`${N} EASY/HARD は準備中のまま`, easyOff && (await page.locator('.diff.hard').isDisabled()));
+  await page.getByRole('button', { name: 'スタート' }).click();
+  await page.getByText('はじめての方へ').waitFor();
+  await page.getByText('スキップして本番へ').click();
+  await waitState(page, 'countdown');
+  await page.evaluate(botScript, 'pointer');
+  await waitState(page, 'playing', 8000);
+  const meta = await page.evaluate(() => ({ notes: window.__bos.judge.states.length, last: window.__bos.judge.states.at(-1).note.t }));
+  await page.waitForFunction(() => window.__bos.songTime() > 40, null, { timeout: 60000 });
+  await page.screenshot({ path: path.join(OUT, 'song2-play.png') });
+  await page.locator('.result-card').waitFor({ timeout: 80000 });
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: path.join(OUT, 'song2-result.png') });
+  const r = await page.evaluate(() => ({ score: document.querySelector('.result-score .score').textContent, stats: window.__bos.judge.stats, bot: window.__botLog, active: window.__musicActive, title: document.querySelector('.result-card').innerText.slice(0, 40) }));
+  console.log('song2', JSON.stringify({ ...r, ...meta }));
+  check(`${N} 結果に曲名が出る`, r.title.includes('何度でも呼ぶよ'), r.title.replace(/\n/g, ' '));
+  check(`${N} 全判定単位が判定済み`, r.stats.judgedUnits === r.stats.totalUnits, `${r.stats.judgedUnits}/${r.stats.totalUnits}`);
+  check(`${N} ボット入力でMISSなし（テンポ表と譜面の同期・同時押し・長押し）`, r.stats.miss === 0, `P${r.stats.perfect} G${r.stats.great} g${r.stats.good} M${r.stats.miss}`);
+  check(`${N} 同時に押されたのは最大2点`, r.bot.maxConcurrent <= 2, `max=${r.bot.maxConcurrent}`);
+  check(`${N} 最後のノーツはフェード（77秒）前`, meta.last < 77000, `last=${(meta.last / 1000).toFixed(2)}s`);
+  const best = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.includes('best')));
+  check(`${N} 自己ベストは曲ごとに別キー`, best.length === 1 && best[0].includes('yobuyo'), JSON.stringify(best));
+  check(`${N} 終了後に音声ノードが残らない`, r.active === 0);
+  check(`${N} コンソールエラーなし`, errors.length === 0, errors.join(' | ').slice(0, 300));
+  await browser.close();
+}
+
 async function failures() {
   // 画像読込失敗・音源読込失敗でも操作不能にならない
   const browser = await chromium.launch();
@@ -266,6 +310,7 @@ async function failures() {
 (async () => {
   await run('mobile390', { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true }, 'pointer');
   await run('pc', { viewport: { width: 1280, height: 800 } }, 'key');
+  await songTwo();
   await failures();
   fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(results, null, 1));
   const bad = results.filter((r) => !r.ok);

@@ -4,7 +4,7 @@ import type { CharacterState, Grade } from '../types';
 /**
  * キャラのリアクション制御（README_CLAUDE.md）。
  *
- * - 優先順位：best/clear > ready > select > combo > cheer > miss > perfect > hit > idle
+ * - 優先順位：best/clear > ready > select > miss > combo > cheer > perfect > hit > idle
  * - 待ち行列は持たない。優先度の低い反応は、高い反応の表示中に来たら捨てる（あとで再生しない）。
  * - タイマーを使わず「現在時刻との比較」だけで状態を決めるので、遅れて古い画像へ戻る事故が起きない。
  * - 同一フレームの判定は1回の flush でまとめる。MISSが含まれるフレームは必ずMISS扱い（成功・コンボ演出は出さない）。
@@ -14,9 +14,9 @@ export const PRIORITY: Record<CharacterState, number> = {
   clear: 100,
   ready: 90,
   select: 80,
-  combo: 70,
-  cheer: 60,
-  miss: 50,
+  miss: 70,
+  combo: 60,
+  cheer: 50,
   perfect: 40,
   hit: 30,
   idle: 0,
