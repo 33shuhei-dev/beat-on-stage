@@ -58,7 +58,7 @@
   "bio": null,
   "xUrl": null,
   "enabledInPrototype": true,
-  "publicReleaseApproved": false,
+  "publicReleaseApproved": true,
   "assetVersion": "v0.1.0",
   "images": {
    "idle": "assets/characters/koen_iji_seisosha/idle.png"
@@ -68,6 +68,6 @@
    "scale": 1.0,
    "offsetY": 0
   },
-  "publicReleaseNote": "素材登録のみ。一般公開の承認は未確認（ゆずちゃんの承認とは別）"
+  "publicReleaseNote": "2026-10-29 ユーザー（制作者）の指示により公開サイトへの反映を承認"
  }
 ]

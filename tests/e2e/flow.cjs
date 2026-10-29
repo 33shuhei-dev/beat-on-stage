@@ -110,14 +110,14 @@ async function run(name, contextOpts, mode) {
   await page.getByText('キャラをえらぶ').first().waitFor();
   await page.waitForTimeout(300);
   check(`[${name}] 最初の画面はキャラ選択（キャラ→曲→難易度）`, await page.locator('.char-card').first().isVisible());
-  check(`[${name}] キャラ選択に入ると select ポーズ（800ms）`, (await page.locator('.char-img img').getAttribute('data-reaction')) === 'select');
+  check(`[${name}] キャラ選択に入ると select ポーズ（800ms）`, (await page.locator('.char-card >> nth=0 >> .char-img img').getAttribute('data-reaction')) === 'select');
   await shot('1-character');
   await page.waitForTimeout(1000);
-  check(`[${name}] 800ms 後は通常ポーズへ戻る`, (await page.locator('.char-img img').getAttribute('data-reaction')) === 'idle');
+  check(`[${name}] 800ms 後は通常ポーズへ戻る`, (await page.locator('.char-card >> nth=0 >> .char-img img').getAttribute('data-reaction')) === 'idle');
   await noHScroll('キャラ選択');
 
   // プロフィール：サイト内表示。外部リンクは押したときだけ別タブ
-  await page.getByRole('button', { name: 'プロフィール' }).click();
+  await page.locator('.char-card').first().getByRole('button', { name: 'プロフィール' }).click();
   await page.getByText('ゆず係を見る').waitFor();
   await shot('1b-profile');
   await noHScroll('プロフィール');
@@ -325,6 +325,8 @@ async function exclusive() {
   await page.getByRole('button', { name: '← キャラ' }).click();
   await page.locator('.char-card').first().locator('.char-main').click();
   await page.getByText('このキャラで決定').click();
+  const k = page.locator('.song-card', { hasText: '君が笑うほうへ' });
+  check('[専用曲] 公園維持清掃車の専用曲は準備中で選べない（譜面未作成）', (await k.isDisabled()) && /公園維持清掃車専用/.test(await k.innerText()) && /準備中/.test(await k.innerText()));
   check('[専用曲] ゆずちゃんに戻すと専用曲が選べる', await page.locator('.song-card', { hasText: '何度でも呼ぶよ' }).isEnabled());
   await browser.close();
 }
