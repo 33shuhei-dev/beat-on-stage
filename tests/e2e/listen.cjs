@@ -97,6 +97,7 @@ const check = (name, ok, info = '') => { results.push(ok); console.log(`${ok ? '
   // ゆずちゃん：プロフィールにも専用曲
   await page.locator('.char-card', { hasText: 'ゆずちゃん' }).getByRole('button', { name: 'プロフィール' }).click();
   check('[試聴] プロフィールに専用曲の試聴入口（ゆずちゃん＝何度でも呼ぶよ）', (await page.getByRole('button', { name: /何度でも呼ぶよ をフルで聴く/ }).count()) === 1);
+  check('[試聴] プロフィールに共通曲(Vote)の試聴入口もある・他キャラの専用曲は出ない', (await page.getByRole('button', { name: /Vote Vote Vote をフルで聴く/ }).count()) === 1 && (await page.getByRole('button', { name: /君が笑うほうへ をフルで聴く/ }).count()) === 0);
   await page.getByRole('button', { name: '← 戻る' }).click();
 
   // ゲーム開始で停止（試聴中にスタート）

@@ -467,7 +467,7 @@ function CharacterCard({ c, selected, posing, onSelect, onProfile }: { c: Charac
 
 /** プロフィール（サイト内表示）。未提供の項目は出さない。外部リンクは押したときだけ別タブで開く */
 function ProfileScreen({ c, songs, onListen, onBack }: { c: CharacterData; songs: SongData[]; onListen: (id: string) => void; onBack: () => void }) {
-  const own = songs.filter((x) => x.exclusiveCharacterId === c.id);
+  const own = songs.filter((x) => !x.exclusiveCharacterId || x.exclusiveCharacterId === c.id);
   const [broken, setBroken] = useState(false);
   const rows: [string, string][] = [['区分', c.participationType]];
   if (c.affiliation) rows.push(['所属', c.affiliation]);
@@ -493,7 +493,7 @@ function ProfileScreen({ c, songs, onListen, onBack }: { c: CharacterData; songs
         {(c.links?.length || c.xUrl) && <p className="note small">外部サイトは別タブで開きます。</p>}
         {own.map((x) => (
           <div key={x.id} className="profile-song">
-            <span>専用曲：{x.title}{x.available ? '' : '（準備中）'}</span>
+            <span>{x.exclusiveCharacterId ? '専用曲' : '共通曲'}：{x.title}{x.available ? '' : '（準備中）'}</span>
             <ListenButton song={x} onOpen={onListen} />
           </div>
         ))}
