@@ -11,4 +11,6 @@ npm run build # dist/ に静的ファイル
 
 現状・未確認事項・次の作業は [HANDOFF.md](./HANDOFF.md)、企画資料は `docs/`。
 
-公開：`npm run build` の `dist/` を静的ホスティングに置くだけ（`vercel.json` / `scripts/deploy-pages.sh` あり）。
+公開URL：https://33shuhei-dev.github.io/beat-on-stage/ （GitHub Pages・`gh-pages` ブランチ / root）
+リポジトリ：https://github.com/33shuhei-dev/beat-on-stage
+更新手順：`main` を更新 → `scripts/deploy-pages.sh origin`（ビルドして `gh-pages` へ push）。`vercel.json` もあり、Vercel に Import しても同じ `dist/` を配信できる。

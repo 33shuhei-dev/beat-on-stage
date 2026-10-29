@@ -2,6 +2,13 @@
 
 2026-10-29 / Claude Code。範囲は「Vote Vote Vote／NORMAL／ゆずちゃん」で、曲選択→キャラ選択→難易度→プレイ→結果→即リトライが動くところまで。公開・ドメイン・外部サービス・ゆず係サイトへのリンクは未着手（別工程）。
 
+## 公開状況（2026-10-29）
+- 公開URL: https://33shuhei-dev.github.io/beat-on-stage/ （ログイン不要）
+- リポジトリ: https://github.com/33shuhei-dev/beat-on-stage （main=ソース、gh-pages=ビルド済み配信物）
+- 更新: `scripts/deploy-pages.sh origin`。Pages 設定は gh-pages / root（ユーザー側で設定済み）
+- 公開ページで確認済み（ユーザー側）: 表示、キャラ選択→2曲の選曲、何度でも呼ぶよの EASY/NORMAL/HARD 表示
+- 未確認: 公開版での通しプレイ、実機での音ズレ・触り心地（自動テストはローカルbuildのみ）
+
 ## v0.4.0（2026-10-29）キャラ→曲→難易度・プロフィール・全6譜面・公開準備
 
 **導線**：キャラ選択（最初の画面）→ 曲 → 難易度。曲の紐づけは `public/data/songs.json` の `exclusiveCharacterId`（`yobuyo`＝`char_0001`＝ゆずちゃん専用／`vote`＝未指定＝登録キャラ全員の共通曲）。専用曲は他キャラの曲選択で無効＋「ゆずちゃん専用」表示。キャラを足すときは `characters.json` に追加するだけ（素材は `reactions` 形式）。既定の難易度は EASY（`config.ts` の `DEFAULT_SELECTION`）。
