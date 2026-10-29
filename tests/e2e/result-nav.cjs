@@ -40,8 +40,8 @@ const check = (n, ok, i = '') => { res.push(ok); console.log(`${ok ? 'PASS' : 'F
   await p.waitForFunction(() => !document.querySelector('button.big')?.disabled, null, { timeout: 20000 });
   await p.getByRole('button', { name: 'スタート' }).click();
   await p.waitForFunction(() => window.__bos && window.__bos.state === 'countdown', null, { timeout: 10000 });
-  const sub = await p.evaluate(() => window.__bos.o.title + '|' + window.__bos.o.subtitle);
-  check('[結果→難易度を上げる] そのままNORMALで開始できる', /NORMAL/.test(sub), sub);
+  const cnt = await p.evaluate(() => window.__bos.judge.states.length);
+  check('[結果→難易度を上げる] そのままNORMALの譜面（210ノーツ）で開始できる', cnt === 210, String(cnt));
   await p.getByRole('button', { name: /やめる|中断|選曲|終了/ }).first().click().catch(() => {});
   await ctx.close();
 
