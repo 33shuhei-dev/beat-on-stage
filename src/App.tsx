@@ -190,10 +190,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <header className="logo" aria-label="BEAT ON STAGE">
-        <div className="logo-main">BEAT <span>ON</span> STAGE</div>
-        <div className="logo-sub">ミスヘブン総選挙 非公式応援リズムゲーム</div>
-      </header>
+      <Logo />
 
       {screen === 'song' && (
         <section className="screen">
@@ -212,10 +209,10 @@ export default function App() {
                   setScreen('character');
                 }}
               >
-                <Jacket title={s.title} />
+                <Jacket title={s.title} src={s.jacket} />
                 <div className="song-meta">
                   <div className="song-title">{s.title}</div>
-                  <div className="song-info">{Math.round(s.durationSeconds)}秒{s.available ? '' : ''}</div>
+                  <div className="song-info">{Math.round(s.durationSeconds)}秒</div>
                   {!s.available && <div className="badge">準備中</div>}
                 </div>
               </button>
@@ -247,7 +244,7 @@ export default function App() {
         <section className="screen">
           <div className="step"><span className="step-no">3</span>難易度</div>
           <div className="summary">
-            <Jacket title={song.title} small />
+            <Jacket title={song.title} src={song.jacket} small />
             <div>
               <div className="song-title">{song.title}</div>
               <div className="song-info">キャラ：{character.name}</div>
@@ -323,7 +320,32 @@ export default function App() {
   );
 }
 
-function Jacket({ title, small }: { title: string; small?: boolean }) {
+const SUBTITLE = 'ミスヘブン総選挙 非公式応援リズムゲーム';
+
+function Logo() {
+  const [broken, setBroken] = useState(false);
+  return (
+    <header className="logo">
+      {broken ? (
+        <div className="logo-main">BEAT <span>ON</span> STAGE</div>
+      ) : (
+        <img className="logo-img" src={asset('assets/brand/logo.png')} alt="BEAT ON STAGE" width={1774} height={887} onError={() => setBroken(true)} />
+      )}
+      <div className="logo-sub">{SUBTITLE}</div>
+    </header>
+  );
+}
+
+/** 採用済みジャケット画像を縦横比そのまま表示。読めないときは文字の仮ジャケット */
+function Jacket({ title, src, small }: { title: string; src?: string | null; small?: boolean }) {
+  const [broken, setBroken] = useState(false);
+  if (src && !broken) {
+    return (
+      <div className={`jacket img ${small ? 'small' : ''}`}>
+        <img src={asset(src)} alt={`${title} ジャケット`} width={1254} height={1254} loading="eager" onError={() => setBroken(true)} />
+      </div>
+    );
+  }
   return (
     <div className={`jacket ${small ? 'small' : ''}`} aria-hidden>
       <div className="jacket-lights" />
@@ -397,7 +419,7 @@ function ResultScreen({ rv, song, character, difficulty, chartVersion, onRetry, 
             <tr><th>FAST / SLOW</th><td>{s.fast} / {s.slow}</td></tr>
           </tbody>
         </table>
-        <div className="result-foot">BEAT ON STAGE ・ ミスヘブン総選挙 非公式応援リズムゲーム ・ 譜面 {chartVersion}</div>
+        <div className="result-foot">BEAT ON STAGE ・ {SUBTITLE} ・ 譜面 {chartVersion}</div>
       </div>
       {character.xUrl && (
         <a className="btn ghost" href={character.xUrl} target="_blank" rel="noopener noreferrer">{character.name} の X を見る</a>

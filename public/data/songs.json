@@ -190,7 +190,8 @@
    "easy": null,
    "normal": "data/charts/vote.normal.json",
    "hard": null
-  }
+  },
+  "jacket": "assets/jackets/vote.png"
  },
  {
   "id": "yobuyo",
@@ -211,6 +212,7 @@
    "easy": null,
    "normal": null,
    "hard": null
-  }
+  },
+  "jacket": "assets/jackets/yobuyo.png"
  }
 ]

@@ -8,6 +8,8 @@ export interface SongData {
   durationSeconds: number;
   fadeOut: { startSeconds: number; endSeconds: number };
   audio: string;
+  /** ジャケット画像（正方形・採用済み素材をそのまま使用） */
+  jacket?: string | null;
   available: boolean;
   bpm: number | null;
   tempoAnalysis: { status: string; listeningVerified: boolean; summary: string; bpmStart: number; bpmEnd: number } | null;
