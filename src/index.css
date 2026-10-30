@@ -290,3 +290,6 @@ body { word-break: auto-phrase; line-break: strict; }
 .next-diff { background: linear-gradient(135deg, #ffd86b, #ff9f4a); color: #2a1200; border-color: transparent; font-weight: 800; }
 .result-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .result-nav .btn { padding-left: 4px; padding-right: 4px; white-space: nowrap; }
+
+/* 結果画面：長い名前（7文字）でも折り返さない */
+.result-char .char-name { white-space: nowrap; font-size: 13px; margin-left: -12px; margin-right: -12px; }
