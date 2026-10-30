@@ -94,5 +94,49 @@
     "best": "assets/characters/koen_iji_seisosha/reactions/v1/best.png"
    }
   }
+ },
+ {
+  "id": "kikko_mantaro",
+  "name": "キッコー万太郎",
+  "participationType": "応援者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": "https://x.com/kikkomantaro_04",
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/kikko_mantaro/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.921875
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/kikko_mantaro/reactions/v1/idle.png",
+    "select": "assets/characters/kikko_mantaro/reactions/v1/select.png",
+    "ready": "assets/characters/kikko_mantaro/reactions/v1/ready.png",
+    "perfect": "assets/characters/kikko_mantaro/reactions/v1/perfect.png",
+    "combo": "assets/characters/kikko_mantaro/reactions/v1/combo.png",
+    "miss": "assets/characters/kikko_mantaro/reactions/v1/miss.png",
+    "cheer": "assets/characters/kikko_mantaro/reactions/v1/cheer.png",
+    "clear": "assets/characters/kikko_mantaro/reactions/v1/clear.png",
+    "best": "assets/characters/kikko_mantaro/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-10-30 ユーザー確認済み（キャラ化・ゲーム公開許可）。素材の success 画像をエンジンの hit 状態に登録。素材 success.png は受領ファイル自体が途中で切れていた（画像の読み込みに失敗・SHA256は破損ファイルと一致）ため未登録。hit状態は idle で代用。再送後に登録する"
  }
 ]

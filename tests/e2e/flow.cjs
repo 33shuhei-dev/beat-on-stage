@@ -244,7 +244,7 @@ async function run(name, contextOpts, mode) {
 
 
 // 全6譜面（2曲×EASY/NORMAL/HARD）をボットで通す：開始→プレイ→結果→（1本目だけ）リトライ
-const SONGS = [['Vote Vote Vote', 'vote'], ['何度でも呼ぶよ', 'yobuyo'], ['君が笑うほうへ', 'kimi_ga_warau_hou_e']];
+const SONGS = [['Vote Vote Vote', 'vote'], ['何度でも呼ぶよ', 'yobuyo'], ['君が笑うほうへ', 'kimi_ga_warau_hou_e'], ['灯りは消さずにおくよ', 'akari_kikko_mantaro']];
 const DIFFS = [['easy', 'EASY'], ['normal', 'NORMAL'], ['hard', 'HARD']];
 async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
@@ -256,7 +256,8 @@ async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
   const N = `[${songId}/${diff}]`;
   await page.goto(BASE + '?dev=1');
-  if (songId === 'kimi_ga_warau_hou_e') await page.locator('.char-card', { hasText: '公園維持清掃車' }).locator('.char-main').click();
+  const owner = { kimi_ga_warau_hou_e: '公園維持清掃車', akari_kikko_mantaro: 'キッコー万太郎' }[songId];
+  if (owner) await page.locator('.char-card', { hasText: owner }).locator('.char-main').click();
   await page.getByText('このキャラで決定').click();
   await page.locator('.song-card', { hasText: songLabel }).click();
   await page.getByRole('button', { name: 'スタート' }).waitFor({ timeout: 20000 });
@@ -320,20 +321,27 @@ async function exclusive() {
   await page.goto(BASE);
   await page.locator('.char-card').nth(1).waitFor();
   const names = (await page.locator('.char-name').allInnerTexts()).map((t) => t.trim());
-  check('[キャラ] ゆずちゃんと公園維持清掃車が選べる', names.includes('ゆずちゃん') && names.includes('公園維持清掃車'), names.join('|'));
+  check('[キャラ] ゆずちゃん・公園維持清掃車・キッコー万太郎が選べる', names.includes('ゆずちゃん') && names.includes('公園維持清掃車') && names.includes('キッコー万太郎'), names.join('|'));
+  check('[キャラ] キッコー万太郎の区分は「応援者」', /応援者/.test(await page.locator('.char-card', { hasText: 'キッコー万太郎' }).innerText()));
   check('[キャラ] 公園維持清掃車の区分は「応援者」', /応援者/.test(await page.locator('.char-card', { hasText: '公園維持清掃車' }).innerText()));
   await pick('公園維持清掃車');
   await page.screenshot({ path: path.join(OUT, 'exclusive-koen.png') });
   const t1 = await titles();
   check('[専用曲] 公園維持清掃車：共通曲Voteと自分の専用曲が出る', t1.includes('Vote Vote Vote') && t1.includes('君が笑うほうへ'), t1.join('|'));
-  check('[専用曲] 公園維持清掃車：他キャラ専用の「何度でも呼ぶよ」は出さない', !t1.includes('何度でも呼ぶよ'));
+  check('[専用曲] 公園維持清掃車：他キャラ専用の曲は出さない', !t1.includes('何度でも呼ぶよ') && !t1.includes('灯りは消さずにおくよ'));
   check('[専用曲] 公園維持清掃車：専用曲も共通曲も選べる', (await page.locator('.song-card', { hasText: '君が笑うほうへ' }).isEnabled()) && (await page.locator('.song-card', { hasText: 'Vote Vote Vote' }).isEnabled()));
   check('[専用曲] 公園維持清掃車：専用曲の表示', /公園維持清掃車専用/.test(await page.locator('.song-card', { hasText: '君が笑うほうへ' }).innerText()));
+  await page.getByRole('button', { name: '← キャラ' }).click();
+  await pick('キッコー万太郎');
+  await page.screenshot({ path: path.join(OUT, 'exclusive-kikko.png') });
+  const t3 = await titles();
+  check('[専用曲] キッコー万太郎：共通曲Voteと専用曲「灯りは消さずにおくよ」が出る', t3.includes('Vote Vote Vote') && t3.includes('灯りは消さずにおくよ') && t3.length === 2, t3.join('|'));
+  check('[専用曲] キッコー万太郎：専用曲も共通曲も選べる', (await page.locator('.song-card', { hasText: '灯りは消さずにおくよ' }).isEnabled()) && (await page.locator('.song-card', { hasText: 'Vote Vote Vote' }).isEnabled()));
   await page.getByRole('button', { name: '← キャラ' }).click();
   await pick('ゆずちゃん');
   const t2 = await titles();
   check('[専用曲] ゆずちゃん：共通曲Voteと専用曲が出る', t2.includes('Vote Vote Vote') && t2.includes('何度でも呼ぶよ'), t2.join('|'));
-  check('[専用曲] ゆずちゃん：公園維持清掃車の専用曲は出さない', !t2.includes('君が笑うほうへ'));
+  check('[専用曲] ゆずちゃん：他キャラの専用曲は出さない', !t2.includes('君が笑うほうへ') && !t2.includes('灯りは消さずにおくよ'));
   check('[専用曲] ゆずちゃん：専用曲が選べる', await page.locator('.song-card', { hasText: '何度でも呼ぶよ' }).isEnabled());
   check('[専用曲] ページエラーなし', errs.length === 0, errs.join('|').slice(0, 200));
   // 準備中の曲（差し込み）：共通曲は選べ、準備中は選べず、他キャラへは出ない

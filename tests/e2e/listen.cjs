@@ -100,6 +100,12 @@ const check = (name, ok, info = '') => { results.push(ok); console.log(`${ok ? '
   check('[試聴] プロフィールに共通曲(Vote)の試聴入口もある・他キャラの専用曲は出ない', (await page.getByRole('button', { name: /Vote Vote Vote をフルで聴く/ }).count()) === 1 && (await page.getByRole('button', { name: /君が笑うほうへ をフルで聴く/ }).count()) === 0);
   await page.getByRole('button', { name: '← 戻る' }).click();
 
+  // キッコー万太郎：専用曲のフル版は公開しない（試聴ボタンなし）。共通曲は聴ける
+  await page.locator('.char-card', { hasText: 'キッコー万太郎' }).getByRole('button', { name: 'プロフィール' }).click();
+  await page.locator('.profile-card').waitFor();
+  check('[試聴] キッコー万太郎：専用曲のフル試聴ボタンは出さない・共通曲は出る', (await page.getByRole('button', { name: /灯りは消さずにおくよ をフルで聴く/ }).count()) === 0 && (await page.getByRole('button', { name: /Vote Vote Vote をフルで聴く/ }).count()) === 1);
+  await page.getByRole('button', { name: '← 戻る' }).click();
+
   // ゲーム開始で停止（試聴中にスタート）
   await page.getByText('このキャラで決定').click();
   await page.locator('.song-card', { hasText: 'Vote Vote Vote' }).click();
