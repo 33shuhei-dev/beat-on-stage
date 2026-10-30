@@ -322,7 +322,7 @@ async function exclusive() {
   await page.locator('.char-card').nth(1).waitFor();
   const names = (await page.locator('.char-name').allInnerTexts()).map((t) => t.trim());
   check('[キャラ] ゆずちゃん・公園維持清掃車・キッコー万太郎が選べる', names.includes('ゆずちゃん') && names.includes('公園維持清掃車') && names.includes('キッコー万太郎'), names.join('|'));
-  check('[公開承認] 未承認のとあまるは一般公開（?dev=1なし）では表示されない', !names.includes('とあまる'), names.join('|'));
+  check('[公開承認] とあまるは承認済みなので一般公開（?dev=1なし）でも表示される', names.includes('とあまる'), names.join('|'));
   check('[キャラ] キッコー万太郎の区分は「応援者」', /応援者/.test(await page.locator('.char-card', { hasText: 'キッコー万太郎' }).innerText()));
   check('[キャラ] 公園維持清掃車の区分は「応援者」', /応援者/.test(await page.locator('.char-card', { hasText: '公園維持清掃車' }).innerText()));
   await pick('公園維持清掃車');

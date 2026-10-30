@@ -19,7 +19,7 @@ const check = (n, ok, i = '') => { res.push(ok); console.log(`${ok ? 'PASS' : 'F
   // 1) 一般公開（devなし）では出ない
   let ctx = await mk(); let p = await ctx.newPage(); p.on('pageerror', (e) => errs.push(String(e)));
   await p.goto(BASE); await p.locator('.char-card').first().waitFor();
-  check('[とあまる] 公開承認なし：一般公開では表示されない', (await p.locator('.char-card', { hasText: 'とあまる' }).count()) === 0);
+  check('[とあまる] 公開承認済み：一般公開（?dev=1なし）でも表示される', (await p.locator('.char-card', { hasText: 'とあまる' }).count()) === 1);
   await ctx.close();
   // 2) dev で表示
   ctx = await mk(); p = await ctx.newPage(); p.on('pageerror', (e) => errs.push(String(e)));

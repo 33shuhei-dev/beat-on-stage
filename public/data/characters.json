@@ -153,7 +153,7 @@
    }
   ],
   "enabledInPrototype": true,
-  "publicReleaseApproved": false,
+  "publicReleaseApproved": true,
   "assetVersion": "v1",
   "images": {
    "idle": "assets/characters/toamaru/base.png"
@@ -188,6 +188,6 @@
     "best": "assets/characters/toamaru/reactions/v1/best.png"
    }
   },
-  "publicReleaseNote": "未承認：素材パックに『キャラ化・ゲーム公開の許可はこの会話では確認済みの申告なし』とある。ユーザーが許可を確認したら true にして公開する。true になるまで一般公開では表示されない（?dev=1 でのみ表示）"
+  "publicReleaseNote": "2026-10-30 ユーザーが本人の許可取得を申告したため公開承認（true）"
  }
 ]
