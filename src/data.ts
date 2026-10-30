@@ -1,3 +1,4 @@
+import { isDevMode } from './storage';
 import type { CharacterData, ChartData, SongData } from './types';
 
 export const asset = (p: string) => import.meta.env.BASE_URL + p.replace(/^\//, '');
@@ -9,7 +10,8 @@ async function getJson<T>(p: string): Promise<T> {
 }
 
 export const loadSongs = () => getJson<SongData[]>('data/songs.json');
-export const loadCharacters = async () => (await getJson<CharacterData[]>('data/characters.json')).filter((c) => c.enabledInPrototype);
+/** 公開承認(publicReleaseApproved)のないキャラは、開発用メニュー(?dev=1)でだけ見える。未承認のキャラを一般公開に出さないための関所 */
+export const loadCharacters = async () => (await getJson<CharacterData[]>('data/characters.json')).filter((c) => c.enabledInPrototype && (c.publicReleaseApproved || isDevMode()));
 export const loadChart = (path: string) => getJson<ChartData>(path);
 
 export async function loadAudioData(path: string): Promise<ArrayBuffer> {

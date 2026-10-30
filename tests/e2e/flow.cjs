@@ -244,7 +244,7 @@ async function run(name, contextOpts, mode) {
 
 
 // 全6譜面（2曲×EASY/NORMAL/HARD）をボットで通す：開始→プレイ→結果→（1本目だけ）リトライ
-const SONGS = [['Vote Vote Vote', 'vote'], ['何度でも呼ぶよ', 'yobuyo'], ['君が笑うほうへ', 'kimi_ga_warau_hou_e'], ['灯りは消さずにおくよ', 'akari_kikko_mantaro']];
+const SONGS = [['Vote Vote Vote', 'vote'], ['何度でも呼ぶよ', 'yobuyo'], ['君が笑うほうへ', 'kimi_ga_warau_hou_e'], ['灯りは消さずにおくよ', 'akari_kikko_mantaro'], ['まだ見ぬ光の真ん中へ', 'mada_minu_hikari']];
 const DIFFS = [['easy', 'EASY'], ['normal', 'NORMAL'], ['hard', 'HARD']];
 async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
@@ -256,7 +256,7 @@ async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
   const N = `[${songId}/${diff}]`;
   await page.goto(BASE + '?dev=1');
-  const owner = { kimi_ga_warau_hou_e: '公園維持清掃車', akari_kikko_mantaro: 'キッコー万太郎' }[songId];
+  const owner = { kimi_ga_warau_hou_e: '公園維持清掃車', akari_kikko_mantaro: 'キッコー万太郎', mada_minu_hikari: 'とあまる' }[songId];
   if (owner) await page.locator('.char-card', { hasText: owner }).locator('.char-main').click();
   await page.getByText('このキャラで決定').click();
   await page.locator('.song-card', { hasText: songLabel }).click();
@@ -322,6 +322,7 @@ async function exclusive() {
   await page.locator('.char-card').nth(1).waitFor();
   const names = (await page.locator('.char-name').allInnerTexts()).map((t) => t.trim());
   check('[キャラ] ゆずちゃん・公園維持清掃車・キッコー万太郎が選べる', names.includes('ゆずちゃん') && names.includes('公園維持清掃車') && names.includes('キッコー万太郎'), names.join('|'));
+  check('[公開承認] 未承認のとあまるは一般公開（?dev=1なし）では表示されない', !names.includes('とあまる'), names.join('|'));
   check('[キャラ] キッコー万太郎の区分は「応援者」', /応援者/.test(await page.locator('.char-card', { hasText: 'キッコー万太郎' }).innerText()));
   check('[キャラ] 公園維持清掃車の区分は「応援者」', /応援者/.test(await page.locator('.char-card', { hasText: '公園維持清掃車' }).innerText()));
   await pick('公園維持清掃車');
