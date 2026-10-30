@@ -1,6 +1,16 @@
-# BEAT ON STAGE — 開発引継ぎ（v0.4.0・公開準備版）
+# BEAT ON STAGE — 開発引継ぎ（v0.7.0）
 
 2026-10-29 / Claude Code。範囲は「Vote Vote Vote／NORMAL／ゆずちゃん」で、曲選択→キャラ選択→難易度→プレイ→結果→即リトライが動くところまで。公開・ドメイン・外部サービス・ゆず係サイトへのリンクは未着手（別工程）。
+
+## v0.7.0（2026-10-30）とあまる・まだ見ぬ光の真ん中へ【未公開・ブランチ toamaru】
+
+- **公開状態**: パックに「キャラ化・ゲーム公開の許可は確認済みの申告なし」とあるため `publicReleaseApproved:false`。公開ビルドでは非表示、`?dev=1` でのみ表示。main / gh-pages には未反映（push・デプロイ未実施）。
+- 公開手順: ユーザーの許可確認 → `characters.json` の toamaru を `publicReleaseApproved:true` → main へマージ → push → `bash scripts/deploy-pages.sh origin`。
+- キャラ: とあまる（出場者）。紹介ページ https://fanme.link/@toamaru 。bio・X は未確認のため空。10状態PNG（1024、足元 y944、anchor [0.5,0.921875]）。
+- 専用曲『まだ見ぬ光の真ん中へ』: ゲーム用85秒（82〜85sフェード、導入そのまま）、フル 244.44s は「♪フルで聴く」用。ジャケット採用版。
+- 譜面: EASY 111 / NORMAL 190 / HARD 283 ノーツ。`tools/charts/mada_minu_hikari.py`。最後のノーツは 81.93s（HARD 81.84s）で、85s側にノーツなし。版 `0.1.0-draft`。
+- テンポ: 150.2→152.8BPM のゆるいテンポ上昇を多項式 beatMap で吸収。自動推定で**聴取未確認**。小節頭位相は chroma 解析で選択。
+- 検証: ユニット204、e2e flow（全15譜面）・listen 27・settings 7・toamaru 16 通過。実機未確認。
 
 ## v0.6.0（2026-10-30）キッコー万太郎・灯りは消さずにおくよ
 - キャラ `kikko_mantaro` キッコー万太郎（区分=応援者、X=https://x.com/kikkomantaro_04、紹介文・紹介ページは未提供のため空欄／リンク欄なし）。base.png ＋ 画像1024×1024・足元y=944・anchor(0.5,0.921875)。ゆずちゃん等と同じリアクションエンジンに登録（自動トリミングなし。覆面の先端・手足の見切れなしを確認）。公開許可はユーザー確認済み（素材パックの記載）。

@@ -281,7 +281,7 @@ async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
   check(`${N} 全判定単位が判定済み`, r.stats.judgedUnits === r.stats.totalUnits, `${r.stats.judgedUnits}/${r.stats.totalUnits}`);
   check(`${N} ボット入力でMISSなし・全PERFECT`, r.stats.miss === 0 && r.stats.perfect === r.stats.totalUnits, `P${r.stats.perfect} G${r.stats.great} g${r.stats.good} M${r.stats.miss}`);
   check(`${N} 同時に押されたのは最大2点`, r.bot.maxConcurrent <= 2, `max=${r.bot.maxConcurrent}`);
-  check(`${N} 最後のノーツ・長押しはフェード開始前`, meta.last < (songId === 'vote' ? 72000 : 77000), `last=${(meta.last / 1000).toFixed(2)}s`);
+  check(`${N} 最後のノーツ・長押しはフェード開始前`, meta.last < (songId === 'vote' ? 72000 : songId === 'mada_minu_hikari' ? 82000 : 77000), `last=${(meta.last / 1000).toFixed(2)}s`);
   const best = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.includes('best')));
   check(`${N} 自己ベストは 曲×難易度×譜面版 のキー`, best.length === 1 && best[0] === `bos:v1:best:${songId}:${diff}:0.1.0-draft`, JSON.stringify(best));
   check(`${N} 終了後に音声ノードが残らない`, r.active === 0);

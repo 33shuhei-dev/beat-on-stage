@@ -1,4 +1,4 @@
-# BEAT ON STAGE（v0.6.0）
+# BEAT ON STAGE（v0.7.0）
 
 ミスヘブン総選挙 非公式応援リズムゲーム。スマホ縦持ち4レーン（PCは D/F/J/K）。React + TypeScript + Vite、ビルド結果は静的ファイルのみ。
 
