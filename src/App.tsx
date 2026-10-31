@@ -520,6 +520,8 @@ function PoseImg({ character, state }: { character: CharacterData; state: Charac
 function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion, onRetry, onNextDifficulty, onPickDifficulty, onBack, onTop, onProfile }: { rv: ResultView; song: SongData; character: CharacterData; difficulty: Difficulty; reactions: boolean; chartVersion: string; onRetry: () => void; onNextDifficulty: (d: Difficulty) => void; onPickDifficulty: () => void; onBack: () => void; onTop: () => void; onProfile: () => void }) {
   const next = DIFFICULTIES[DIFFICULTIES.indexOf(difficulty) + 1] as Difficulty | undefined;
   const nextOk = !!next && !!song.charts[next];
+  /** 押したときだけ外部のプロフィール（紹介ページ→X）を別タブで開く。無ければサイト内プロフィール */
+  const promoUrl = character.links?.[0]?.url ?? character.xUrl ?? null;
   const { r, prevBest, newBest } = rv;
   const s = r.stats;
   const diff = prevBest ? r.score - prevBest.score : null;
@@ -563,9 +565,10 @@ function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion
         </table>
         <div className="result-foot"><span className="nw">BEAT ON STAGE</span> <span className="nw">{SUBTITLE}</span> <span className="nw">譜面 {chartVersion}</span></div>
       </div>
-      <button className="btn ghost profile-promo" onClick={onProfile}>★ {character.name} のプロフィールを見る</button>
-      {character.xUrl && (
-        <a className="btn ghost" href={character.xUrl} target="_blank" rel="noopener noreferrer">{character.name} の X を見る</a>
+      {promoUrl ? (
+        <a className="btn ghost profile-promo" href={promoUrl} target="_blank" rel="noopener noreferrer">★ {character.name} のプロフィールを見る</a>
+      ) : (
+        <button className="btn ghost profile-promo" onClick={onProfile}>★ {character.name} のプロフィールを見る</button>
       )}
       <button className="btn primary big" onClick={onRetry}>もう一度</button>
       {nextOk && <button className="btn big next-diff" onClick={() => onNextDifficulty(next!)}>難易度を上げる（{DIFFICULTY_LABEL[next!]}）</button>}

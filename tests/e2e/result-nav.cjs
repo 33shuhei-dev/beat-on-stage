@@ -67,15 +67,25 @@ const check = (n, ok, i = '') => { res.push(ok); console.log(`${ok ? 'PASS' : 'F
   await Promise.all([
     viaResult('[結果→難易度選択] 難易度画面へ（EASYのまま）', '難易度選択', async (q) => (await q.getByRole('button', { name: 'スタート' }).isVisible()) && /selected/.test((await q.locator('.diff.easy').getAttribute('class')) || '')),
     viaResult('[結果→選曲へ] 選曲画面へ', '選曲へ', async (q) => (await q.getByText('曲をえらぶ').isVisible()) && (await q.locator('.song-card').count()) >= 1),
-    viaResult('[結果→プロフィール] キャラのプロフィールが開き、戻るとリザルトに戻る', 'のプロフィールを見る', async (q) => {
-      const prof = await q.locator('.profile-card').isVisible();
-      await q.screenshot({ path: path.join(OUT, 'result-to-profile.png') });
-      await q.getByRole('button', { name: '← 戻る' }).click();
-      await q.waitForTimeout(300);
-      const back = await q.locator('.result-card').isVisible();
-      console.log('profile-debug', prof, back, (await q.locator('body').innerText()).slice(0, 80).replace(/\n/g, ' '));
-      return prof && back;
-    }),
+    (async () => {
+      const c = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+      await c.addInitScript(() => { try { localStorage.setItem('bos:v1:tutorialSeen', 'true'); } catch {} });
+      const q = await c.newPage();
+      q.on('pageerror', (e) => errs.push(String(e)));
+      await q.goto(BASE + '?dev=1');
+      await q.getByText('このキャラで決定').click();
+      await q.locator('.song-card', { hasText: 'Vote Vote Vote' }).click();
+      await q.getByRole('button', { name: 'スタート' }).waitFor({ timeout: 20000 });
+      await q.waitForFunction(() => !document.querySelector('button.big')?.disabled, null, { timeout: 20000 });
+      await q.locator('.row.dev input').check();
+      await q.getByRole('button', { name: 'スタート' }).click();
+      await q.locator('.result-card').waitFor({ timeout: 100000 });
+      const a = q.locator('a.profile-promo');
+      const href = await a.getAttribute('href'); const tg = await a.getAttribute('target');
+      await q.screenshot({ path: path.join(OUT, 'result-promo.png') });
+      check('[結果→プロフィール] 外部の紹介ページ(ゆず係)を別タブで開くリンク', href === 'https://yuzu-gakari.vercel.app' && tg === '_blank', `${href} ${tg}`);
+      await c.close();
+    })(),
     viaResult('[結果→TOPへ] キャラ選択（TOP）へ', 'TOPへ', async (q) => (await q.getByText('キャラをえらぶ').isVisible()) && (await q.getByText('このキャラで決定').isVisible())),
   ]);
   check('コンソールエラーなし', errs.length === 0, errs.join('|').slice(0, 200));
