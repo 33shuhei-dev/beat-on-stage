@@ -1,0 +1,193 @@
+[
+ {
+  "id": "char_0001",
+  "name": "ゆずちゃん",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v001",
+  "images": {
+   "idle": "assets/characters/char_0001/idle.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 512,
+    "height": 512
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/char_0001/reactions/v1/idle.png",
+    "select": "assets/characters/char_0001/reactions/v1/select.png",
+    "ready": "assets/characters/char_0001/reactions/v1/ready.png",
+    "hit": "assets/characters/char_0001/reactions/v1/hit.png",
+    "perfect": "assets/characters/char_0001/reactions/v1/perfect.png",
+    "combo": "assets/characters/char_0001/reactions/v1/combo.png",
+    "miss": "assets/characters/char_0001/reactions/v1/miss.png",
+    "cheer": "assets/characters/char_0001/reactions/v1/cheer.png",
+    "clear": "assets/characters/char_0001/reactions/v1/clear.png",
+    "best": "assets/characters/char_0001/reactions/v1/best.png"
+   }
+  },
+  "links": [
+   {
+    "label": "ゆず係を見る",
+    "url": "https://yuzu-gakari.vercel.app"
+   }
+  ],
+  "publicReleaseNote": "2026-10-29 ユーザー（制作者）の指示により一般公開を承認"
+ },
+ {
+  "id": "koen_iji_seisosha",
+  "name": "公園維持清掃車",
+  "participationType": "応援者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": "https://x.com/rego0701",
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1.1",
+  "images": {
+   "idle": "assets/characters/koen_iji_seisosha/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "publicReleaseNote": "2026-10-29 ユーザー（制作者）の指示により公開サイトへの反映を承認",
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 512,
+    "height": 512
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/koen_iji_seisosha/reactions/v1/idle.png",
+    "select": "assets/characters/koen_iji_seisosha/reactions/v1/select.png",
+    "ready": "assets/characters/koen_iji_seisosha/reactions/v1/ready.png",
+    "hit": "assets/characters/koen_iji_seisosha/reactions/v1/hit.png",
+    "perfect": "assets/characters/koen_iji_seisosha/reactions/v1/perfect.png",
+    "combo": "assets/characters/koen_iji_seisosha/reactions/v1/combo.png",
+    "miss": "assets/characters/koen_iji_seisosha/reactions/v1/miss.png",
+    "cheer": "assets/characters/koen_iji_seisosha/reactions/v1/cheer.png",
+    "clear": "assets/characters/koen_iji_seisosha/reactions/v1/clear.png",
+    "best": "assets/characters/koen_iji_seisosha/reactions/v1/best.png"
+   }
+  }
+ },
+ {
+  "id": "kikko_mantaro",
+  "name": "キッコー万太郎",
+  "participationType": "応援者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": "https://x.com/kikkomantaro_04",
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/kikko_mantaro/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.921875
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/kikko_mantaro/reactions/v1/idle.png",
+    "select": "assets/characters/kikko_mantaro/reactions/v1/select.png",
+    "ready": "assets/characters/kikko_mantaro/reactions/v1/ready.png",
+    "perfect": "assets/characters/kikko_mantaro/reactions/v1/perfect.png",
+    "combo": "assets/characters/kikko_mantaro/reactions/v1/combo.png",
+    "miss": "assets/characters/kikko_mantaro/reactions/v1/miss.png",
+    "cheer": "assets/characters/kikko_mantaro/reactions/v1/cheer.png",
+    "clear": "assets/characters/kikko_mantaro/reactions/v1/clear.png",
+    "best": "assets/characters/kikko_mantaro/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-10-30 ユーザー確認済み（キャラ化・ゲーム公開許可）。素材の success 画像をエンジンの hit 状態に登録。素材 success.png は受領ファイル自体が途中で切れていた（画像の読み込みに失敗・SHA256は破損ファイルと一致）ため未登録。hit状態は idle で代用。再送後に登録する"
+ },
+ {
+  "id": "toamaru",
+  "name": "とあまる",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "とあまるの紹介ページ",
+    "url": "https://fanme.link/@toamaru"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/toamaru/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.921875
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/toamaru/reactions/v1/idle.png",
+    "select": "assets/characters/toamaru/reactions/v1/select.png",
+    "ready": "assets/characters/toamaru/reactions/v1/ready.png",
+    "hit": "assets/characters/toamaru/reactions/v1/hit.png",
+    "perfect": "assets/characters/toamaru/reactions/v1/perfect.png",
+    "combo": "assets/characters/toamaru/reactions/v1/combo.png",
+    "miss": "assets/characters/toamaru/reactions/v1/miss.png",
+    "cheer": "assets/characters/toamaru/reactions/v1/cheer.png",
+    "clear": "assets/characters/toamaru/reactions/v1/clear.png",
+    "best": "assets/characters/toamaru/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-10-30 ユーザーが本人の許可取得を申告したため公開承認（true）"
+ }
+]
