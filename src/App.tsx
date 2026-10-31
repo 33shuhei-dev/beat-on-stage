@@ -32,6 +32,8 @@ export default function App() {
   const [chars, setChars] = useState<CharacterData[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [screen, setScreen] = useState<Screen>('character');
+  /** プロフィールから戻る先（キャラ選択 or リザルト） */
+  const [profileBack, setProfileBack] = useState<Screen>('character');
   const [sel, setSel] = useState<Selection>(loadSelection);
   const [settings, setSettingsState] = useState<Settings>(loadSettings);
   const [showSettings, setShowSettings] = useState(false);
@@ -254,6 +256,7 @@ export default function App() {
                 }}
                 onProfile={() => {
                   setSel({ ...sel, characterId: c.id });
+                  setProfileBack('character');
                   setScreen('profile');
                 }}
               />
@@ -268,7 +271,7 @@ export default function App() {
         </section>
       )}
 
-      {screen === 'profile' && character && <ProfileScreen c={character} songs={songs} onListen={setListenId} onBack={() => setScreen('character')} />}
+      {screen === 'profile' && character && <ProfileScreen c={character} songs={songs} onListen={setListenId} onBack={() => setScreen(profileBack)} />}
 
       {screen === 'song' && character && (
         <section className="screen">
@@ -371,6 +374,7 @@ export default function App() {
           onPickDifficulty={() => setScreen('difficulty')}
           onBack={() => setScreen('song')}
           onTop={() => setScreen('character')}
+          onProfile={() => { setProfileBack('result'); setScreen('profile'); }}
         />
       )}
 
@@ -513,7 +517,7 @@ function PoseImg({ character, state }: { character: CharacterData; state: Charac
   return <img className={isReaction ? 'rx' : ''} data-reaction={idx === 0 ? state : 'idle'} src={asset(src)} alt={character.name} onError={() => setIdx((i) => i + 1)} />;
 }
 
-function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion, onRetry, onNextDifficulty, onPickDifficulty, onBack, onTop }: { rv: ResultView; song: SongData; character: CharacterData; difficulty: Difficulty; reactions: boolean; chartVersion: string; onRetry: () => void; onNextDifficulty: (d: Difficulty) => void; onPickDifficulty: () => void; onBack: () => void; onTop: () => void }) {
+function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion, onRetry, onNextDifficulty, onPickDifficulty, onBack, onTop, onProfile }: { rv: ResultView; song: SongData; character: CharacterData; difficulty: Difficulty; reactions: boolean; chartVersion: string; onRetry: () => void; onNextDifficulty: (d: Difficulty) => void; onPickDifficulty: () => void; onBack: () => void; onTop: () => void; onProfile: () => void }) {
   const next = DIFFICULTIES[DIFFICULTIES.indexOf(difficulty) + 1] as Difficulty | undefined;
   const nextOk = !!next && !!song.charts[next];
   const { r, prevBest, newBest } = rv;
@@ -559,6 +563,7 @@ function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion
         </table>
         <div className="result-foot"><span className="nw">BEAT ON STAGE</span> <span className="nw">{SUBTITLE}</span> <span className="nw">譜面 {chartVersion}</span></div>
       </div>
+      <button className="btn ghost profile-promo" onClick={onProfile}>★ {character.name} のプロフィールを見る</button>
       {character.xUrl && (
         <a className="btn ghost" href={character.xUrl} target="_blank" rel="noopener noreferrer">{character.name} の X を見る</a>
       )}

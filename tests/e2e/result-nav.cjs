@@ -67,6 +67,13 @@ const check = (n, ok, i = '') => { res.push(ok); console.log(`${ok ? 'PASS' : 'F
   await Promise.all([
     viaResult('[結果→難易度選択] 難易度画面へ（EASYのまま）', '難易度選択', async (q) => (await q.getByRole('button', { name: 'スタート' }).isVisible()) && /selected/.test((await q.locator('.diff.easy').getAttribute('class')) || '')),
     viaResult('[結果→選曲へ] 選曲画面へ', '選曲へ', async (q) => (await q.getByText('曲をえらぶ').isVisible()) && (await q.locator('.song-card').count()) >= 1),
+    viaResult('[結果→プロフィール] キャラのプロフィールが開き、戻るとリザルトに戻る', 'のプロフィールを見る', async (q) => {
+      const prof = (await q.getByText('プロフィール', { exact: true }).first().isVisible()) && (await q.locator('.profile-card').isVisible());
+      await q.screenshot({ path: path.join(OUT, 'result-to-profile.png') });
+      await q.getByRole('button', { name: '← 戻る' }).click();
+      await q.waitForTimeout(300);
+      return prof && (await q.locator('.result-card').isVisible());
+    }),
     viaResult('[結果→TOPへ] キャラ選択（TOP）へ', 'TOPへ', async (q) => (await q.getByText('キャラをえらぶ').isVisible()) && (await q.getByText('このキャラで決定').isVisible())),
   ]);
   check('コンソールエラーなし', errs.length === 0, errs.join('|').slice(0, 200));
