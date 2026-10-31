@@ -264,7 +264,7 @@ export default function App() {
           </div>
           {devMode && character && <ReactionLab character={character} settings={settings} />}
           <p className="note small">キャラによって得点や判定は変わりません。</p>
-          <div className="footer-actions">
+          <div className="footer-actions sticky-foot">
             <button className="btn ghost" onClick={() => setShowSettings(true)}>⚙ 設定</button>
             <button className="btn primary" disabled={!character} onClick={() => setScreen('song')}>このキャラで決定</button>
           </div>

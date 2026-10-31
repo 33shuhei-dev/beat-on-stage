@@ -293,3 +293,10 @@ body { word-break: auto-phrase; line-break: strict; }
 
 /* 結果画面：長い名前（7文字）でも折り返さない */
 .result-char .char-name { white-space: nowrap; font-size: 13px; margin-left: -12px; margin-right: -12px; }
+
+/* キャラ選択：キャラが増えても「このキャラで決定」を画面下に常時表示する */
+.sticky-foot {
+  position: sticky; bottom: 0; z-index: 5;
+  margin: 0 -16px; padding: 10px 16px max(10px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, rgba(11, 3, 24, 0));
+}
