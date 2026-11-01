@@ -51,8 +51,7 @@ const check = (n, ok, i = '') => { res.push(ok); console.log(`${ok ? 'PASS' : 'F
   const info = await sc.locator('.song-info').innerText();
   check('[JUN] 専用曲の表示：「JUN専用・93秒」・選べる', /JUN専用/.test(info) && /93秒/.test(info) && (await sc.isEnabled()), info);
   const jk = await sc.locator('.jacket img').evaluate((i) => ({ ok: i.complete && i.naturalWidth === 1254, w: i.naturalWidth })).catch(() => null);
-  // ジャケット（jun.png）は納品ZIPの欠損で未受領のため、届くまでは文字の仮ジャケットで表示される。届いたら下を有効にする
-  // check('[JUN] 採用ジャケットが表示される（1254px画像）', !!jk && jk.ok, JSON.stringify(jk));
+  check('[JUN] 採用ジャケットが表示される（1254px画像）', !!jk && jk.ok, JSON.stringify(jk));
   await p.screenshot({ path: path.join(OUT, 'jun-songs.png') });
   check('[JUN] 共通曲Voteも選べる', await p.locator('.song-card', { hasText: 'Vote Vote Vote' }).isEnabled());
   // 難易度画面→ EASY/NORMAL/HARD 全部選べる
@@ -68,7 +67,7 @@ const check = (n, ok, i = '') => { res.push(ok); console.log(`${ok ? 'PASS' : 'F
   const t2 = (await p.locator('.song-title').allInnerTexts()).map((t) => t.trim());
   check('[JUN] 他キャラ（ゆずちゃん）の曲一覧には出ない', !t2.includes('その色があるだけで'), t2.join('|'));
   await ctx.close();
-  check('[JUN] 画像・音源・データの読み込みエラー(4xx/5xx)なし（未受領のジャケットを除く）', bad.filter((x) => !/jackets\/sono_iro/.test(x)).length === 0, bad.join('|').slice(0, 200));
+  check('[JUN] 画像・音源・データの読み込みエラー(4xx/5xx)なし', bad.length === 0, bad.join('|').slice(0, 200));
   check('[JUN] ページエラーなし', errs.length === 0, errs.join('|').slice(0, 200));
   await b.close();
   const nb = res.filter((x) => !x).length;

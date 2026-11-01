@@ -1411,7 +1411,7 @@
   "audio": "assets/audio/sono_iro_ga_aru_dake_de.mp3",
   "fullAudio": "assets/audio/full/sono_iro_ga_aru_dake_de.mp3",
   "fullDurationSeconds": 284.8,
-  "jacket": null,
+  "jacket": "assets/jackets/sono_iro_ga_aru_dake_de.png",
   "available": true,
   "bpm": null,
   "tempoAnalysis": {

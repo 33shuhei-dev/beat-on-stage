@@ -6,7 +6,7 @@
 
 - キャラ: JUN（応援者）。許可は素材パックに「ユーザー確認済み」。Xのみ https://x.com/MATHU030417 （紹介文・紹介ページは未提供で未設定）。10状態PNG（1280、足元y1190、anchor [0.5, 0.9296875]、success→`hit`、`record`→`best`と解釈。reactions.csv は欠損で未受領）。ベースは idle.png。
 - 専用曲『その色があるだけで』: ゲーム用93秒（89〜93sフェード）、フル 284.8s は「♪フルで聴く」に使用。
-- **ジャケット未受領**: 納品ZIPが途中で切れ `jackets/jun.png`・profile.json・SHA256SUMS が欠損。`songs.json` の `jacket` は null（文字の仮ジャケット）。届いたら `public/assets/jackets/sono_iro_ga_aru_dake_de.png` に置き `jacket` を設定、`tests/e2e/jun.cjs` のジャケット確認を有効化。
+- ジャケット: ユーザーが画像で再送（1254px・採用版）。`public/assets/jackets/sono_iro_ga_aru_dake_de.png`。納品ZIPは途中で切れ profile.json・reactions.csv・SHA256SUMS は未受領のまま。
 - 譜面: EASY 100 / NORMAL 199 / HARD 302 ノーツ（`tools/charts/sono_iro_ga_aru_dake_de.py`）。音の強いスロットを機械的に拾い、密度目標（約1.2/2.3/3.5 per s）に合わせて整形。最後のノーツ88.39s。版 `0.1.0-draft`。
 - テンポ: 約136.7→141BPM。4次多項式 beatMap。bar0=0.38s。小節頭は低域最大の位相だが差は小さい。**自動推定で聴取未確認**。
 - 検証: ユニット264、JUN 13・flow（JUN3譜面）26・listen 27・settings 7・result-nav 9 通過。他曲の譜面は未変更。実機未確認。
