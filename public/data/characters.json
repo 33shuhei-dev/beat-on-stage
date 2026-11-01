@@ -189,5 +189,56 @@
    }
   },
   "publicReleaseNote": "2026-10-30 ユーザーが本人の許可取得を申告したため公開承認（true）"
+ },
+ {
+  "id": "nanahoshi_sena",
+  "name": "七星 せな",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "七星 せなの紹介ページ",
+    "url": "https://www.cityheaven.net/osaka/A2701/A270101/celeb_shagaihi/girlid-55226946/"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/nanahoshi_sena/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.947265625
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/nanahoshi_sena/reactions/v1/idle.png",
+    "select": "assets/characters/nanahoshi_sena/reactions/v1/select.png",
+    "ready": "assets/characters/nanahoshi_sena/reactions/v1/ready.png",
+    "hit": "assets/characters/nanahoshi_sena/reactions/v1/hit.png",
+    "perfect": "assets/characters/nanahoshi_sena/reactions/v1/perfect.png",
+    "combo": "assets/characters/nanahoshi_sena/reactions/v1/combo.png",
+    "miss": "assets/characters/nanahoshi_sena/reactions/v1/miss.png",
+    "cheer": "assets/characters/nanahoshi_sena/reactions/v1/cheer.png",
+    "clear": "assets/characters/nanahoshi_sena/reactions/v1/clear.png",
+    "best": "assets/characters/nanahoshi_sena/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-01 素材パックに『キャラ化・ゲーム公開の許可：ユーザーより確認済み』と記載。紹介文・Xは未受領のため空欄"
  }
 ]
