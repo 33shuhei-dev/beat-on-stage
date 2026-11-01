@@ -285,5 +285,56 @@
    }
   },
   "publicReleaseNote": "2026-11-01 素材パックに『キャラ化・ゲーム掲載許可：ユーザー確認済み』と記載。紹介文・紹介ページは未提供のため未設定。reactions.csv未受領のため record=best（自己ベスト）と解釈"
+ },
+ {
+  "id": "nanami",
+  "name": "淫乱軍ななみ",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "淫乱軍ななみの紹介ページ",
+    "url": "https://share.google/Y54nFtf5khtdKFs3z"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/nanami/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/nanami/reactions/v1/idle.png",
+    "select": "assets/characters/nanami/reactions/v1/select.png",
+    "ready": "assets/characters/nanami/reactions/v1/ready.png",
+    "hit": "assets/characters/nanami/reactions/v1/hit.png",
+    "perfect": "assets/characters/nanami/reactions/v1/perfect.png",
+    "combo": "assets/characters/nanami/reactions/v1/combo.png",
+    "miss": "assets/characters/nanami/reactions/v1/miss.png",
+    "cheer": "assets/characters/nanami/reactions/v1/cheer.png",
+    "clear": "assets/characters/nanami/reactions/v1/clear.png",
+    "best": "assets/characters/nanami/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-01 素材パックに『キャラ化・ゲーム公開許可：ユーザー確認済み』と記載。紹介文・Xは未提供のため空欄。紹介ページはユーザー提供のGoogle共有URL（遷移先は未確認）"
  }
 ]
