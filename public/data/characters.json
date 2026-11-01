@@ -240,5 +240,50 @@
    }
   },
   "publicReleaseNote": "2026-11-01 素材パックに『キャラ化・ゲーム公開の許可：ユーザーより確認済み』と記載。紹介文・Xは未受領のため空欄"
+ },
+ {
+  "id": "jun",
+  "name": "JUN",
+  "participationType": "応援者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": "https://x.com/MATHU030417",
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/jun/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1280,
+    "height": 1280
+   },
+   "anchor": [
+    0.5,
+    0.9296875
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/jun/reactions/v1/idle.png",
+    "select": "assets/characters/jun/reactions/v1/select.png",
+    "ready": "assets/characters/jun/reactions/v1/ready.png",
+    "hit": "assets/characters/jun/reactions/v1/hit.png",
+    "perfect": "assets/characters/jun/reactions/v1/perfect.png",
+    "combo": "assets/characters/jun/reactions/v1/combo.png",
+    "miss": "assets/characters/jun/reactions/v1/miss.png",
+    "cheer": "assets/characters/jun/reactions/v1/cheer.png",
+    "clear": "assets/characters/jun/reactions/v1/clear.png",
+    "best": "assets/characters/jun/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-01 素材パックに『キャラ化・ゲーム掲載許可：ユーザー確認済み』と記載。紹介文・紹介ページは未提供のため未設定。reactions.csv未受領のため record=best（自己ベスト）と解釈"
  }
 ]
