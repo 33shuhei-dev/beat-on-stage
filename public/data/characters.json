@@ -404,13 +404,7 @@
   "participationType": "応援者",
   "affiliation": null,
   "bio": null,
-  "xUrl": null,
-  "links": [
-   {
-    "label": "みなとの紹介ページ",
-    "url": "https://lit.link/f483de0f-6d17-49cb-8e12-968c7918bdcd"
-   }
-  ],
+  "xUrl": "https://x.com/SKSGeRYJFI77013",
   "enabledInPrototype": true,
   "publicReleaseApproved": true,
   "assetVersion": "v1",
@@ -447,6 +441,6 @@
     "best": "assets/characters/minato/reactions/v1/best.png"
    }
   },
-  "publicReleaseNote": "2026-11-03 素材パックに『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。紹介文・Xは未提供のため空欄。紹介ページ（lit.link）はユーザー提供（内容は取得不可・未確認）。success→hit"
+  "publicReleaseNote": "2026-11-03 素材パックに『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。Xはユーザーが後から指定（https://x.com/SKSGeRYJFI77013）。素材パックのlit.linkはりずと同一URLで取り違えの可能性があるため未登録。紹介文は未提供のため空欄。success→hit"
  }
 ]
