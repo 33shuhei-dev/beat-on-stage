@@ -336,5 +336,66 @@
    }
   },
   "publicReleaseNote": "2026-11-01 素材パックに『キャラ化・ゲーム公開許可：ユーザー確認済み』と記載。紹介文・Xは未提供のため空欄。紹介ページはユーザー提供のGoogle共有URL（遷移先は未確認）"
+ },
+ {
+  "id": "rizu",
+  "name": "りず",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "りずの紹介ページ",
+    "url": "https://lit.link/f483de0f-6d17-49cb-8e12-968c7918bdcd"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/rizu/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 0.86,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1254,
+    "height": 1254
+   },
+   "anchor": [
+    0.5,
+    0.987241
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/rizu/reactions/v1/idle.png",
+    "select": "assets/characters/rizu/reactions/v1/select.png",
+    "ready": "assets/characters/rizu/reactions/v1/ready.png",
+    "hit": "assets/characters/rizu/reactions/v1/hit.png",
+    "perfect": "assets/characters/rizu/reactions/v1/perfect.png",
+    "combo": "assets/characters/rizu/reactions/v1/combo.png",
+    "miss": "assets/characters/rizu/reactions/v1/miss.png",
+    "cheer": "assets/characters/rizu/reactions/v1/cheer.png",
+    "clear": "assets/characters/rizu/reactions/v1/clear.png",
+    "best": "assets/characters/rizu/reactions/v1/best.png"
+   },
+   "stateOffsetY": {
+    "select": 1,
+    "hit": -3,
+    "perfect": -6,
+    "combo": 2,
+    "miss": -2,
+    "cheer": -1,
+    "clear": -1,
+    "best": -6
+   }
+  },
+  "publicReleaseNote": "2026-11-03 素材パックに『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。紹介文・Xは未提供のため空欄。紹介ページは提供されたlit.link（遷移先は取得制限で未確認）。足元微調整は stateOffsetY（素材パックの renderOffsetYSourcePx、success→hit）。素材は1254px・可視高さがキャンバスの97.5%（既存キャラは71〜87%）で、倍率1.0だと舞台上部で頭が切れるため display.scale=0.86（可視高さを既存最大の約87%より少し小さく。髪の上に余白を残す）"
  }
 ]

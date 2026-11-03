@@ -1,4 +1,5 @@
 import { LANE_KEY_LABELS, STAGE_SPRITE_SCALE } from '../config';
+import { spriteOffsetY } from './spriteOffset';
 import type { Grade, TimedNote } from '../types';
 
 export interface Layout {
@@ -145,7 +146,7 @@ export function stageSpriteRect(
   const dh = L.stageH * STAGE_SPRITE_SCALE * scale;
   const dw = dh * (img.naturalWidth / img.naturalHeight);
   const cx = L.w / 2;
-  const footY = L.stageH * 0.95 + offsetY;
+  const footY = L.stageH * 0.95 + offsetY + spriteOffsetY(img, dh);
   return { x: cx - dw * anchorX, y: footY - dh * anchorY, w: dw, h: dh, cx, footY };
 }
 

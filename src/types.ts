@@ -36,6 +36,8 @@ export interface ReactionSet {
   base: CharacterState;
   fallback: CharacterState;
   states: Partial<Record<CharacterState, string>>;
+  /** 状態ごとの足元微調整（キャンバスのピクセル単位。正は下・負は上）。無い状態は 0 */
+  stateOffsetY?: Partial<Record<CharacterState, number>>;
 }
 
 export interface CharacterData {

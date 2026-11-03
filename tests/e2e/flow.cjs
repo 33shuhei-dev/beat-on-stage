@@ -244,7 +244,7 @@ async function run(name, contextOpts, mode) {
 
 
 // 全6譜面（2曲×EASY/NORMAL/HARD）をボットで通す：開始→プレイ→結果→（1本目だけ）リトライ
-const SONGS = [['Vote Vote Vote', 'vote'], ['何度でも呼ぶよ', 'yobuyo'], ['君が笑うほうへ', 'kimi_ga_warau_hou_e'], ['灯りは消さずにおくよ', 'akari_kikko_mantaro'], ['まだ見ぬ光の真ん中へ', 'mada_minu_hikari'], ['こぼれちゃうくらい', 'kobore_chau_kurai'], ['その色があるだけで', 'sono_iro_ga_aru_dake_de'], ['余裕のふりして', 'yoyuu_no_furishite']];
+const SONGS = [['Vote Vote Vote', 'vote'], ['何度でも呼ぶよ', 'yobuyo'], ['君が笑うほうへ', 'kimi_ga_warau_hou_e'], ['灯りは消さずにおくよ', 'akari_kikko_mantaro'], ['まだ見ぬ光の真ん中へ', 'mada_minu_hikari'], ['こぼれちゃうくらい', 'kobore_chau_kurai'], ['その色があるだけで', 'sono_iro_ga_aru_dake_de'], ['余裕のふりして', 'yoyuu_no_furishite'], ['ひとつぶんの晴れ', 'rizu_hitotsubun_no_hare']];
 const DIFFS = [['easy', 'EASY'], ['normal', 'NORMAL'], ['hard', 'HARD']];
 async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
@@ -256,7 +256,7 @@ async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
   const N = `[${songId}/${diff}]`;
   await page.goto(BASE + '?dev=1');
-  const owner = { kimi_ga_warau_hou_e: '公園維持清掃車', akari_kikko_mantaro: 'キッコー万太郎', mada_minu_hikari: 'とあまる', kobore_chau_kurai: '七星 せな', sono_iro_ga_aru_dake_de: 'JUN', yoyuu_no_furishite: '淫乱軍ななみ' }[songId];
+  const owner = { kimi_ga_warau_hou_e: '公園維持清掃車', akari_kikko_mantaro: 'キッコー万太郎', mada_minu_hikari: 'とあまる', kobore_chau_kurai: '七星 せな', sono_iro_ga_aru_dake_de: 'JUN', yoyuu_no_furishite: '淫乱軍ななみ', rizu_hitotsubun_no_hare: 'りず' }[songId];
   if (owner) await page.locator('.char-card', { hasText: owner }).locator('.char-main').click();
   await page.getByText('このキャラで決定').click();
   await page.locator('.song-card', { hasText: songLabel }).click();
@@ -281,7 +281,7 @@ async function oneChart(browser, songLabel, songId, diff, diffLabel, retry) {
   check(`${N} 全判定単位が判定済み`, r.stats.judgedUnits === r.stats.totalUnits, `${r.stats.judgedUnits}/${r.stats.totalUnits}`);
   check(`${N} ボット入力でMISSなし・全PERFECT`, r.stats.miss === 0 && r.stats.perfect === r.stats.totalUnits, `P${r.stats.perfect} G${r.stats.great} g${r.stats.good} M${r.stats.miss}`);
   check(`${N} 同時に押されたのは最大2点`, r.bot.maxConcurrent <= 2, `max=${r.bot.maxConcurrent}`);
-  check(`${N} 最後のノーツ・長押しはフェード開始前`, meta.last < (songId === 'vote' ? 72000 : songId === 'mada_minu_hikari' ? 82000 : songId === 'kobore_chau_kurai' ? 88000 : songId === 'sono_iro_ga_aru_dake_de' ? 89000 : songId === 'yoyuu_no_furishite' ? 80000 : 77000), `last=${(meta.last / 1000).toFixed(2)}s`);
+  check(`${N} 最後のノーツ・長押しはフェード開始前`, meta.last < (songId === 'vote' ? 72000 : songId === 'mada_minu_hikari' ? 82000 : songId === 'kobore_chau_kurai' ? 88000 : songId === 'sono_iro_ga_aru_dake_de' ? 89000 : songId === 'yoyuu_no_furishite' ? 80000 : songId === 'rizu_hitotsubun_no_hare' ? 85000 : 77000), `last=${(meta.last / 1000).toFixed(2)}s`);
   const best = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.includes('best')));
   check(`${N} 自己ベストは 曲×難易度×譜面版 のキー`, best.length === 1 && best[0] === `bos:v1:best:${songId}:${diff}:0.1.0-draft`, JSON.stringify(best));
   check(`${N} 終了後に音声ノードが残らない`, r.active === 0);

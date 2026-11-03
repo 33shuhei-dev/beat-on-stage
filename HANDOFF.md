@@ -1,6 +1,17 @@
-# BEAT ON STAGE — 開発引継ぎ（v1.0.0）
+# BEAT ON STAGE — 開発引継ぎ（v1.1.0）
 
 2026-10-29 / Claude Code。範囲は「Vote Vote Vote／NORMAL／ゆずちゃん」で、曲選択→キャラ選択→難易度→プレイ→結果→即リトライが動くところまで。公開・ドメイン・外部サービス・ゆず係サイトへのリンクは未着手（別工程）。
+
+## v1.1.0（2026-11-03）りず・ひとつぶんの晴れ
+
+- キャラ: りず（出場者）。許可は素材パックに「ユーザー確認済み」。紹介ページは提供された lit.link https://lit.link/f483de0f-6d17-49cb-8e12-968c7918bdcd をそのまま登録（**遷移先は取得制限で未確認**）。Xリンク・紹介文は未提供で空欄。10状態PNG（1254×1254 RGBA、success→`hit`）。ベース画像は base.png。
+- **足元微調整**: 素材パックの `renderOffsetYSourcePx` を `reactions.stateOffsetY`（キャンバスpx、正=下）として登録。`src/engine/spriteOffset.ts` に画像→補正のWeakMapを置き、`stageSpriteRect` の足元に「表示高さ/キャンバス高さ」倍して加算（原画PNGは無加工）。他キャラは未指定＝0で挙動不変。anchor = [0.5, 1238/1254]（idleの可視下端）。
+- **表示倍率**: 可視高さがキャンバスの97.5%（既存は71〜87%）で、倍率1.0だと舞台上部で頭が切れるため `display.scale=0.86`（髪の上に余白）。手・花束・裾は切れない。自動トリミングなし。
+- 専用曲『ひとつぶんの晴れ』: ゲーム用89秒（85〜89sフェード、冒頭0秒から・イントロ保持）。フル音源は保管用で `fullAudio:null`（同梱せず）。ジャケットは文字なし採用版（1254px）。選曲は共通曲Vote＋りず専用。
+- 譜面: EASY 100 / NORMAL 181 / HARD 275 ノーツ（`tools/charts/rizu_hitotsubun_no_hare.py`、生成は `python3 -I tools/analysis/rizu_pick.py <rizu_beats.pyの出力>`）。音の強いスロットを機械的に拾い密度目標に整形（手配置ではない）。最後のノーツ82.6s以下、85s以降にノーツなし。同時押しなし。版 `0.1.0-draft`。
+- テンポ: 約134BPM（自己相関は約67BPMにも山。134側を採用）。拍は `tools/analysis/rizu_beats.py`（librosa beat_track）の追跡拍をそのまま使用（ibi 0.44〜0.45s、64〜66s付近だけ約0.5sに緩む＝テンポが少し揺れる箇所）。bar0=0.41s、小節頭位相は拍頭の低域エネルギー最大の位相0。**自動推定で聴取未確認**。別曲のBPM・オフセットは流用していない。
+- 検証: ユニット327（stateOffset3件追加）、りず専用14（`tests/e2e/rizu.cjs`）、flow（りず3譜面＋vote/hard・ななみ/easyの退行）通過、settings 7・result-nav 9・listen 27 通過。ボットは3譜面とも全PERFECT。**実機未確認**。
+- 注意: tools/analysis に struct.py があり、`python3 tools/analysis/*.py` を -I なしで実行すると標準ライブラリ struct を上書きして numpy が壊れる。解析・生成は `python3 -I` で実行し、譜面ソース（tools/charts/）は -I なしで実行する。
 
 ## v1.0.0（2026-11-01）淫乱軍ななみ・余裕のふりして
 

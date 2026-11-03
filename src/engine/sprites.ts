@@ -1,5 +1,6 @@
 import { DEFAULT_SPRITE_ANCHOR } from '../config';
 import { loadImage } from '../data';
+import { setSpriteOffsetPx } from './spriteOffset';
 import { CHARACTER_STATES, type CharacterData, type CharacterState } from '../types';
 
 /**
@@ -53,6 +54,8 @@ async function build(c: CharacterData, timeoutMs: number): Promise<SpriteSet> {
   CHARACTER_STATES.forEach((s, i) => {
     const img = imgs[i];
     map.set(s, img);
+    const off = r?.stateOffsetY?.[s];
+    if (img && off) setSpriteOffsetPx(img, off);
     status[s] = { ok: !!img, width: img?.naturalWidth ?? 0, height: img?.naturalHeight ?? 0, path: paths[s] ?? null };
   });
   const ax = r?.anchor?.[0] ?? DEFAULT_SPRITE_ANCHOR.x;
