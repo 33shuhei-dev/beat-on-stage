@@ -442,5 +442,56 @@
    }
   },
   "publicReleaseNote": "2026-11-03 素材パックに『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。Xはユーザーが後から指定（https://x.com/SKSGeRYJFI77013）。素材パックのlit.linkはりずと同一URLで取り違えの可能性があるため未登録。紹介文は未提供のため空欄。success→hit"
+ },
+ {
+  "id": "izana_ryo",
+  "name": "誘 リョウ",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "誘 リョウの紹介ページ",
+    "url": "https://www.cityheaven.net/hyogo/A2801/A280102/kobe_gold/girlid-64202997/"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/izana_ryo/reactions/v1/idle.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.9453125
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/izana_ryo/reactions/v1/idle.png",
+    "select": "assets/characters/izana_ryo/reactions/v1/select.png",
+    "ready": "assets/characters/izana_ryo/reactions/v1/ready.png",
+    "hit": "assets/characters/izana_ryo/reactions/v1/hit.png",
+    "perfect": "assets/characters/izana_ryo/reactions/v1/perfect.png",
+    "combo": "assets/characters/izana_ryo/reactions/v1/combo.png",
+    "miss": "assets/characters/izana_ryo/reactions/v1/miss.png",
+    "cheer": "assets/characters/izana_ryo/reactions/v1/cheer.png",
+    "clear": "assets/characters/izana_ryo/reactions/v1/clear.png",
+    "best": "assets/characters/izana_ryo/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-03 素材パック（CLAUDE_HANDOFF.md / profile.json）に『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。正式表記は 誘-いざな-リョウ（読み：いざな りょう）。紹介文・Xは未指定のため空欄（捏造しない）。紹介ページは提供された cityheaven のURLをそのまま登録（遷移先はこの環境から未確認）。10状態PNGは1024×1024・共通倍率・靴の中心x=512／靴底y=968に調整済みで、トリミングや個別の倍率変更はしていない（anchor=968/1024、stateOffsetYなし、display.scale=1.0。可視高さは約86%で既存の最大値と同程度）。素材のselected→select、success→hit に対応づけ。通常表示（キャラ選択カード）も reactions の idle を使用。参照用の採用原画 approved_base_original.png はリポジトリに入れていない"
  }
 ]

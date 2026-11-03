@@ -1,7 +1,16 @@
-# BEAT ON STAGE — 開発引継ぎ（v1.2.0）
+# BEAT ON STAGE — 開発引継ぎ（v1.3.0）
 
 2026-10-29 / Claude Code。範囲は「Vote Vote Vote／NORMAL／ゆずちゃん」で、曲選択→キャラ選択→難易度→プレイ→結果→即リトライが動くところまで。公開・ドメイン・外部サービス・ゆず係サイトへのリンクは未着手（別工程）。
 
+## v1.3.0（2026-11-03）誘 リョウ・風まで連れて
+
+- キャラ: 誘 リョウ（出場者、正式表記 誘-いざな-リョウ、読み いざな りょう、ID `izana_ryo`）。許可は素材パックに「ユーザー確認済み（キャラ化・ゲーム公開）」。紹介ページは profile.json の cityheaven URL（https://www.cityheaven.net/hyogo/A2801/A280102/kobe_gold/girlid-64202997/）をそのまま登録（**遷移先はこの環境から未確認**）。Xリンク・紹介文は未指定のため空欄（捏造しない）。profile.json はそのまま設定コードにせず `characters.json` / `songs.json` の形式へ変換した。
+- 素材: 10状態PNG（1024×1024 RGBA、共通倍率、靴の中心x=512・靴底y=968、納品物とバイト一致で無加工）。対応づけ＝素材 `selected`→`select`、`success`→`hit`（既存エンジンの名前）。`perfect`・`combo`・`miss`・`cheer`・`clear`・`best`・`idle`・`ready` は同名。**成功(hit)とPERFECTは別画像で別イベント**（既存の優先順位 `best/clear > ready > select > miss > combo > cheer > perfect > hit > idle` のまま）。10状態すべて使える形で登録（6状態への縮退なし）。anchor=[0.5, 968/1024]、`display.scale=1.0`、`stateOffsetY` なし（全状態の靴底が967〜968pxで揃っており補正不要。可視高さは約86%で既存キャラの最大値と同程度、頭・手・靴の見切れなし）。キャラ選択カードの通常表示も reactions の idle を使用。`reference/approved_base_original.png`（採用原画の保管用）と full 音源はリポジトリに入れていない。
+- 専用曲『風まで連れて』: ゲーム用101秒（97〜101sフェード、冒頭0秒から・イントロ保持。MP3コンテナ上は101.04秒、ブラウザのデコードは101.0秒）。`fullAudio:null`（フルは保管用。素材パックの指示）。ジャケットは採用版（1254px、タイトル入り完成画像）。選曲は共通曲Vote＋誘 リョウ専用。
+- テンポ（**本曲の音から計測。他曲のBPM・オフセットは流用していない**）: 約131.6→135.4BPM（4分音符0.458→0.444秒）に緩やかに上昇するため、拍ごとの `beatMap`（234拍、5次多項式、拍ずれrms約11ms）で表現。自己相関は約132BPM（0.453秒）と約66BPM（0.906秒）、8分（0.22秒）に山があり、開始値110〜170BPMのどの初期値でも約132.5BPMに収束するので約133BPMの拍を採用（約66BPMの可能性は残るが8分が強く倍取りは考えにくい）。窓ごとの独立推定と beatMap の差は±10ms前後。bar0=0.218秒（小節頭は拍頭の低域オンセットと和音変化量がどちらも位相0で最大。ただし打楽器が弱く差は小さい）。**自動推定で聴取未確認**。解析は `tools/analysis/kaze_beats.py`（`python3 -I`）。
+- 譜面: EASY 126 / NORMAL 209 / HARD 318 ノーツ（`tools/charts/kaze_made_tsurete.py`、生成は `python3 -I tools/analysis/kaze_pick.py <kaze_beats.pyの出力>`）。音の強いスロットを機械的に拾い密度目標に整形（手配置ではない）。りず用の方式に**最大空白の埋め処理**を追加（EASY 2.6秒・NORMAL 2.0秒・HARD 1.8秒を超える空白に、最も強い拍頭を足す。足さないと EASY 中盤に4.5秒の空白）。最後のノーツ EASY 93.8s / NORMAL 94.7s / HARD 94.9s、97秒以降（フェード）にノーツなし。同時押しなし。版 `0.1.0-draft`。区間名（導入/前半/中盤/後半）は音量の段階で便宜的に区切っただけ。
+- 検証: ユニット387（みなと統合後）、専用E2E `tests/e2e/izana.cjs` 16、ボット通しプレイは誘 リョウ3譜面とも全PERFECT・MISS 0（EASY 129 / NORMAL 213 / HARD 323判定単位、最大同時2点、結果・自己ベストキー・音声ノード解放・即リトライで音1本）。退行: vote/hard・yoyuu/easy・rizu/normal・mada/normal（vote/hard は初回にボットの1回遅れでGREAT1、再実行で全PERFECT）、settings 7・result-nav 9・listen 27・rizu 14・nanami 14・sena 14・toamaru 16・jun 14 通過。ブラウザ(Chromium)でのMP3デコードと解析用wavの時間ずれ0サンプル（`decode-offset.cjs` の方法。素材のMP3自体を基準に ffmpeg でデコードしたwavと比較）。390×844で選択→専用曲→プレイ→結果の画面と、10状態の足元・見切れなしを目視確認。**実機未確認**（スマホでの音ズレ・押しやすさ・耳での拍/小節頭は未確認）。
+- 注意: 100秒級の曲を通しで検証するので flow.cjs は `ONLY=kaze_made_tsurete/easy,...` で絞ると速い。tools/charts/__pycache__ はリポジトリに入っている（譜面生成のたびに差分が出るので `git checkout tools/charts/__pycache__` で戻す）。
 ## v1.2.0（2026-11-03）みなと・おすそわけしたいんです
 
 - キャラ: みなと（応援者）。許可は素材パックに「キャラ化・ゲーム公開の許可：ユーザー確認済み」。Xは https://x.com/SKSGeRYJFI77013 （ユーザーが2026-11-03に指定）。素材パックの紹介ページ lit.link はりずと同一URLで取り違えの可能性があるため**登録していない**（正しい紹介ページが来たら `links` に追加）。紹介文は未提供で空欄。10状態PNG（1024、足元y944、anchor [0.5, 0.921875]、success→`hit`、best=自己ベスト）。base.png は idle.png。
