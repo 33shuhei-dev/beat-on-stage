@@ -397,5 +397,56 @@
    }
   },
   "publicReleaseNote": "2026-11-03 素材パックに『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。紹介文・Xは未提供のため空欄。紹介ページは提供されたlit.link（遷移先は取得制限で未確認）。足元微調整は stateOffsetY（素材パックの renderOffsetYSourcePx、success→hit）。素材は1254px・可視高さがキャンバスの97.5%（既存キャラは71〜87%）で、倍率1.0だと舞台上部で頭が切れるため display.scale=0.86（可視高さを既存最大の約87%より少し小さく。髪の上に余白を残す）"
+ },
+ {
+  "id": "minato",
+  "name": "みなと",
+  "participationType": "応援者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "みなとの紹介ページ",
+    "url": "https://lit.link/f483de0f-6d17-49cb-8e12-968c7918bdcd"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/minato/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.921875
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/minato/reactions/v1/idle.png",
+    "select": "assets/characters/minato/reactions/v1/select.png",
+    "ready": "assets/characters/minato/reactions/v1/ready.png",
+    "hit": "assets/characters/minato/reactions/v1/hit.png",
+    "perfect": "assets/characters/minato/reactions/v1/perfect.png",
+    "combo": "assets/characters/minato/reactions/v1/combo.png",
+    "miss": "assets/characters/minato/reactions/v1/miss.png",
+    "cheer": "assets/characters/minato/reactions/v1/cheer.png",
+    "clear": "assets/characters/minato/reactions/v1/clear.png",
+    "best": "assets/characters/minato/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-03 素材パックに『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。紹介文・Xは未提供のため空欄。紹介ページ（lit.link）はユーザー提供（内容は取得不可・未確認）。success→hit"
  }
 ]
