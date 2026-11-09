@@ -493,5 +493,56 @@
    }
   },
   "publicReleaseNote": "2026-11-03 素材パック（CLAUDE_HANDOFF.md / profile.json）に『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。正式表記は 誘-いざな-リョウ（読み：いざな りょう）。紹介文・Xは未指定のため空欄（捏造しない）。紹介ページは提供された cityheaven のURLをそのまま登録（遷移先はこの環境から未確認）。10状態PNGは1024×1024・共通倍率・靴の中心x=512／靴底y=968に調整済みで、トリミングや個別の倍率変更はしていない（anchor=968/1024、stateOffsetYなし、display.scale=1.0。可視高さは約86%で既存の最大値と同程度）。素材のselected→select、success→hit に対応づけ。通常表示（キャラ選択カード）も reactions の idle を使用。参照用の採用原画 approved_base_original.png はリポジトリに入れていない"
+ },
+ {
+  "id": "suzumori_aoi",
+  "name": "涼森 あおい",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "涼森 あおいの紹介ページ",
+    "url": "https://promee.link/ms536"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/suzumori_aoi/reactions/v1/idle.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 512,
+    "height": 512
+   },
+   "anchor": [
+    0.5,
+    0.9140625
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/suzumori_aoi/reactions/v1/idle.png",
+    "select": "assets/characters/suzumori_aoi/reactions/v1/select.png",
+    "ready": "assets/characters/suzumori_aoi/reactions/v1/ready.png",
+    "hit": "assets/characters/suzumori_aoi/reactions/v1/hit.png",
+    "perfect": "assets/characters/suzumori_aoi/reactions/v1/perfect.png",
+    "combo": "assets/characters/suzumori_aoi/reactions/v1/combo.png",
+    "miss": "assets/characters/suzumori_aoi/reactions/v1/miss.png",
+    "cheer": "assets/characters/suzumori_aoi/reactions/v1/cheer.png",
+    "clear": "assets/characters/suzumori_aoi/reactions/v1/clear.png",
+    "best": "assets/characters/suzumori_aoi/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-09 素材パック（CLAUDE_README.md / profile.json）に『キャラ化・ゲーム公開の許可は確認済み』（permission_confirmed:true）と記載。参加区分は出場者。紹介ページは profile.json の https://promee.link/ms536 をそのまま登録（遷移先はこの環境から未確認）。紹介文・Xは未指定のため空欄（捏造しない）。10状態PNGは512×512 RGBA（これまでの1024・1254より小さい）、靴底y=467〜468で全状態そろっており補正なし（anchor=468/512、stateOffsetYなし、display.scale=1.0、可視高さ約80%で見切れなし）。素材の 04_success→hit、02_select→select、10_personal_best→best に対応づけ。通常表示（キャラ選択カード）も reactions の idle を使用。base_character.png は idle とほぼ同一のためリポジトリに入れていない"
  }
 ]

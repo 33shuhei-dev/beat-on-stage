@@ -1,6 +1,15 @@
-# BEAT ON STAGE — 開発引継ぎ（v1.3.0）
+# BEAT ON STAGE — 開発引継ぎ（v1.4.0）
 
 2026-10-29 / Claude Code。範囲は「Vote Vote Vote／NORMAL／ゆずちゃん」で、曲選択→キャラ選択→難易度→プレイ→結果→即リトライが動くところまで。公開・ドメイン・外部サービス・ゆず係サイトへのリンクは未着手（別工程）。
+
+## v1.4.0（2026-11-09）涼森 あおい・Oopsie Daisy!
+
+- キャラ: 涼森 あおい（出場者、ID `suzumori_aoi`）。許可は素材パック（CLAUDE_README.md / profile.json の `permission_confirmed:true`）に「キャラ化・ゲーム公開の許可は確認済み」。紹介ページは profile.json の https://promee.link/ms536 をそのまま登録（**遷移先はこの環境から未確認**）。Xリンク・紹介文は未指定のため空欄（捏造しない）。
+- 素材: 10状態PNG（**512×512** RGBA。これまでの1024/1254より小さい）。素材 `02_select`→`select`、`04_success`→`hit`、`10_personal_best`→`best`、他は同名。靴底y=467〜468で全状態そろい補正不要（anchor=[0.5, 468/512]、`display.scale=1.0`、stateOffsetYなし）。可視高さ約80%で見切れなし。無加工コピー。`base_character.png` は idle とほぼ同一のため未登録。512pxなのでスマホ高解像度では少し柔らかく見える可能性あり（高解像度版が来たら差し替え、anchor/canvas を更新）。
+- 専用曲『Oopsie Daisy!』: ゲーム用84秒（80〜84sフェード、冒頭0秒から・イントロ保持。素材パックの指示どおり）。フル音源は保管用で `fullAudio:null`（同梱せず）。ジャケットは1254px完成画像。選曲は共通曲Vote＋涼森 あおい専用。
+- テンポ（本曲の音から計測。他曲の値は流用していない）: 約160BPM でほぼ一定（拍間隔0.3746→0.3733秒、窓推定159.2〜160.0）。自己相関は約159BPM と約79.5BPM に山があるが拍/半拍の強度比が大きく159側を採用。beatMap 234拍（5次多項式、拍ずれrms約11ms）。bar0=0.116秒。**小節頭は和音変化量が位相0で最大（0.82対0.57〜0.68）だが、低域オンセットは位相2がわずかに上（0.575対0.561）。仮・自動推定で聴取未確認**。解析は `tools/analysis/aoi_beats.py`（`python3 -I`）。
+- 譜面: EASY 95 / NORMAL 172 / HARD 265 ノーツ（`tools/charts/oopsie_daisy.py`、生成は `python3 -I tools/analysis/aoi_pick.py <aoi_beatsの出力>`。kaze_pick.py の方式・密度目標・最大空白埋めと同じ）。長押し 0/4/5。同時押しなし。最後のノーツ77.95s（フェード開始80s）。版 `0.1.0-draft`。
+- 検証: ユニット417、専用E2E `tests/e2e/aoi.cjs` 16/16、ボット通し（oopsie_daisy 3譜面とも全PERFECT・MISS0、vote/hard・kaze/easy の退行も通過）。390×844で選択→曲→プレイ→結果を目視確認。**実機未確認**（スマホでの音ズレ・押しやすさ・耳での拍/小節頭は未確認）。flow.cjs に曲と持ち主を追加済み。
 
 ## v1.3.0（2026-11-03）誘 リョウ・風まで連れて
 
