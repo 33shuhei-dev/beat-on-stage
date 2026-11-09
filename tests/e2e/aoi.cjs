@@ -49,7 +49,7 @@ const check = (n, ok, i = '') => { res.push(ok); console.log(`${ok ? 'PASS' : 'F
   const link = p.locator('.profile-card a', { hasText: '紹介ページ' });
   check('[涼森 あおい] 紹介ページのリンク（https://promee.link/ms536・別タブ・noopener）', (await link.getAttribute('href')) === 'https://promee.link/ms536' && (await link.getAttribute('target')) === '_blank' && /noopener/.test((await link.getAttribute('rel')) || ''));
   check('[涼森 あおい] 未提供のX・所属・紹介文は出さない（Xボタンなし・「準備中」表示）', (await p.locator('.profile-card a', { hasText: /^X を見る/ }).count()) === 0 && !/所属/.test(txt) && /準備中/.test(txt));
-  check('[涼森 あおい] プロフィールに共通曲の「フルで聴く」はあり、専用曲は保管用のため試聴ボタンなし', (await p.getByRole('button', { name: /Oopsie Daisy! をフルで聴く/ }).count()) === 0 && (await p.getByRole('button', { name: /Vote Vote Vote をフルで聴く/ }).count()) === 1);
+  check('[涼森 あおい] プロフィールに共通曲の「フルで聴く」はあり、専用曲もフルで聴ける', (await p.getByRole('button', { name: /Oopsie Daisy! をフルで聴く/ }).count()) === 1 && (await p.getByRole('button', { name: /Vote Vote Vote をフルで聴く/ }).count()) === 1);
   await p.screenshot({ path: path.join(OUT, 'aoi-profile.png') });
   await p.getByRole('button', { name: '← 戻る' }).click(); await p.waitForTimeout(300);
   // 曲選択

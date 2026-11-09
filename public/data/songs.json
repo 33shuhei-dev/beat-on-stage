@@ -2649,7 +2649,7 @@
    "endSeconds": 84
   },
   "audio": "assets/audio/oopsie_daisy.mp3",
-  "fullAudio": null,
+  "fullAudio": "assets/audio/full/oopsie_daisy.mp3",
   "jacket": "assets/jackets/oopsie_daisy.png",
   "available": true,
   "bpm": null,
