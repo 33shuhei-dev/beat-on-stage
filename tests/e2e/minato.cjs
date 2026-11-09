@@ -39,7 +39,7 @@ const check = (n, ok, i = '') => { res.push(ok); console.log(`${ok ? 'PASS' : 'F
   const xl = p.locator('.profile-card a', { hasText: /^X を見る/ });
   check('[みなと] Xリンク（https://x.com/SKSGeRYJFI77013・別タブ・noopener）', (await xl.getAttribute('href')) === 'https://x.com/SKSGeRYJFI77013' && (await xl.getAttribute('target')) === '_blank' && /noopener/.test((await xl.getAttribute('rel')) || ''));
   check('[みなと] 未提供の所属・紹介文は出さない（紹介ページ欄なし・「準備中」表示）', (await p.locator('.profile-card a', { hasText: '紹介ページ' }).count()) === 0 && !/所属/.test(txt) && /準備中/.test(txt));
-  check('[みなと] プロフィールに共通曲の「フルで聴く」はあり、専用曲は保管用のため試聴ボタンなし', (await p.getByRole('button', { name: /おすそわけしたいんです をフルで聴く/ }).count()) === 0 && (await p.getByRole('button', { name: /Vote Vote Vote をフルで聴く/ }).count()) === 1);
+  check('[みなと] プロフィールに共通曲の「フルで聴く」はあり、専用曲もフルで聴ける', (await p.getByRole('button', { name: /おすそわけしたいんです をフルで聴く/ }).count()) === 1 && (await p.getByRole('button', { name: /Vote Vote Vote をフルで聴く/ }).count()) === 1);
   await p.screenshot({ path: path.join(OUT, 'minato-profile.png') });
   await p.getByRole('button', { name: '← 戻る' }).click(); await p.waitForTimeout(300);
   // 曲選択

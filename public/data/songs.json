@@ -873,7 +873,7 @@
    "hard": "data/charts/akari_kikko_mantaro.hard.json"
   },
   "exclusiveCharacterId": "kikko_mantaro",
-  "fullAudio": null,
+  "fullAudio": "assets/audio/full/akari_kikko_mantaro.mp3",
   "fullAudioNote": "フル版(akari_full.mp3)は原本保管用。公開配信・試聴には設定しない（ユーザー指示）"
  },
  {
@@ -1137,7 +1137,7 @@
    "endSeconds": 92
   },
   "audio": "assets/audio/kobore_chau_kurai.mp3",
-  "fullAudio": null,
+  "fullAudio": "assets/audio/full/kobore_chau_kurai.mp3",
   "jacket": "assets/jackets/kobore_chau_kurai.png",
   "available": true,
   "bpm": null,
@@ -1662,7 +1662,7 @@
    "endSeconds": 84
   },
   "audio": "assets/audio/yoyuu_no_furishite.mp3",
-  "fullAudio": null,
+  "fullAudio": "assets/audio/full/yoyuu_no_furishite.mp3",
   "jacket": "assets/jackets/yoyuu_no_furishite.png",
   "available": true,
   "bpm": null,
@@ -1905,7 +1905,7 @@
    "endSeconds": 89
   },
   "audio": "assets/audio/rizu_hitotsubun_no_hare.mp3",
-  "fullAudio": null,
+  "fullAudio": "assets/audio/full/rizu_hitotsubun_no_hare.mp3",
   "jacket": "assets/jackets/rizu_hitotsubun_no_hare.png",
   "available": true,
   "bpm": null,
@@ -2147,7 +2147,7 @@
    "endSeconds": 92
   },
   "audio": "assets/audio/minato_osusowake.mp3",
-  "fullAudio": null,
+  "fullAudio": "assets/audio/full/minato_osusowake.mp3",
   "jacket": "assets/jackets/minato_osusowake.png",
   "available": true,
   "bpm": null,
@@ -2381,7 +2381,7 @@
    "endSeconds": 101
   },
   "audio": "assets/audio/kaze_made_tsurete.mp3",
-  "fullAudio": null,
+  "fullAudio": "assets/audio/full/kaze_made_tsurete.mp3",
   "jacket": "assets/jackets/kaze_made_tsurete.png",
   "available": true,
   "bpm": null,
