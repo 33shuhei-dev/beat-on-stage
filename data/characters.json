@@ -1,0 +1,548 @@
+[
+ {
+  "id": "char_0001",
+  "name": "ゆずちゃん",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v001",
+  "images": {
+   "idle": "assets/characters/char_0001/idle.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 512,
+    "height": 512
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/char_0001/reactions/v1/idle.png",
+    "select": "assets/characters/char_0001/reactions/v1/select.png",
+    "ready": "assets/characters/char_0001/reactions/v1/ready.png",
+    "hit": "assets/characters/char_0001/reactions/v1/hit.png",
+    "perfect": "assets/characters/char_0001/reactions/v1/perfect.png",
+    "combo": "assets/characters/char_0001/reactions/v1/combo.png",
+    "miss": "assets/characters/char_0001/reactions/v1/miss.png",
+    "cheer": "assets/characters/char_0001/reactions/v1/cheer.png",
+    "clear": "assets/characters/char_0001/reactions/v1/clear.png",
+    "best": "assets/characters/char_0001/reactions/v1/best.png"
+   }
+  },
+  "links": [
+   {
+    "label": "ゆず係を見る",
+    "url": "https://yuzu-gakari.vercel.app"
+   }
+  ],
+  "publicReleaseNote": "2026-10-29 ユーザー（制作者）の指示により一般公開を承認"
+ },
+ {
+  "id": "koen_iji_seisosha",
+  "name": "公園維持清掃車",
+  "participationType": "応援者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": "https://x.com/rego0701",
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1.1",
+  "images": {
+   "idle": "assets/characters/koen_iji_seisosha/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "publicReleaseNote": "2026-10-29 ユーザー（制作者）の指示により公開サイトへの反映を承認",
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 512,
+    "height": 512
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/koen_iji_seisosha/reactions/v1/idle.png",
+    "select": "assets/characters/koen_iji_seisosha/reactions/v1/select.png",
+    "ready": "assets/characters/koen_iji_seisosha/reactions/v1/ready.png",
+    "hit": "assets/characters/koen_iji_seisosha/reactions/v1/hit.png",
+    "perfect": "assets/characters/koen_iji_seisosha/reactions/v1/perfect.png",
+    "combo": "assets/characters/koen_iji_seisosha/reactions/v1/combo.png",
+    "miss": "assets/characters/koen_iji_seisosha/reactions/v1/miss.png",
+    "cheer": "assets/characters/koen_iji_seisosha/reactions/v1/cheer.png",
+    "clear": "assets/characters/koen_iji_seisosha/reactions/v1/clear.png",
+    "best": "assets/characters/koen_iji_seisosha/reactions/v1/best.png"
+   }
+  }
+ },
+ {
+  "id": "kikko_mantaro",
+  "name": "キッコー万太郎",
+  "participationType": "応援者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": "https://x.com/kikkomantaro_04",
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/kikko_mantaro/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.921875
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/kikko_mantaro/reactions/v1/idle.png",
+    "select": "assets/characters/kikko_mantaro/reactions/v1/select.png",
+    "ready": "assets/characters/kikko_mantaro/reactions/v1/ready.png",
+    "perfect": "assets/characters/kikko_mantaro/reactions/v1/perfect.png",
+    "combo": "assets/characters/kikko_mantaro/reactions/v1/combo.png",
+    "miss": "assets/characters/kikko_mantaro/reactions/v1/miss.png",
+    "cheer": "assets/characters/kikko_mantaro/reactions/v1/cheer.png",
+    "clear": "assets/characters/kikko_mantaro/reactions/v1/clear.png",
+    "best": "assets/characters/kikko_mantaro/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-10-30 ユーザー確認済み（キャラ化・ゲーム公開許可）。素材の success 画像をエンジンの hit 状態に登録。素材 success.png は受領ファイル自体が途中で切れていた（画像の読み込みに失敗・SHA256は破損ファイルと一致）ため未登録。hit状態は idle で代用。再送後に登録する"
+ },
+ {
+  "id": "toamaru",
+  "name": "とあまる",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "とあまるの紹介ページ",
+    "url": "https://fanme.link/@toamaru"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/toamaru/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.921875
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/toamaru/reactions/v1/idle.png",
+    "select": "assets/characters/toamaru/reactions/v1/select.png",
+    "ready": "assets/characters/toamaru/reactions/v1/ready.png",
+    "hit": "assets/characters/toamaru/reactions/v1/hit.png",
+    "perfect": "assets/characters/toamaru/reactions/v1/perfect.png",
+    "combo": "assets/characters/toamaru/reactions/v1/combo.png",
+    "miss": "assets/characters/toamaru/reactions/v1/miss.png",
+    "cheer": "assets/characters/toamaru/reactions/v1/cheer.png",
+    "clear": "assets/characters/toamaru/reactions/v1/clear.png",
+    "best": "assets/characters/toamaru/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-10-30 ユーザーが本人の許可取得を申告したため公開承認（true）"
+ },
+ {
+  "id": "nanahoshi_sena",
+  "name": "七星 せな",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "七星 せなの紹介ページ",
+    "url": "https://www.cityheaven.net/osaka/A2701/A270101/celeb_shagaihi/girlid-55226946/"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/nanahoshi_sena/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.947265625
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/nanahoshi_sena/reactions/v1/idle.png",
+    "select": "assets/characters/nanahoshi_sena/reactions/v1/select.png",
+    "ready": "assets/characters/nanahoshi_sena/reactions/v1/ready.png",
+    "hit": "assets/characters/nanahoshi_sena/reactions/v1/hit.png",
+    "perfect": "assets/characters/nanahoshi_sena/reactions/v1/perfect.png",
+    "combo": "assets/characters/nanahoshi_sena/reactions/v1/combo.png",
+    "miss": "assets/characters/nanahoshi_sena/reactions/v1/miss.png",
+    "cheer": "assets/characters/nanahoshi_sena/reactions/v1/cheer.png",
+    "clear": "assets/characters/nanahoshi_sena/reactions/v1/clear.png",
+    "best": "assets/characters/nanahoshi_sena/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-01 素材パックに『キャラ化・ゲーム公開の許可：ユーザーより確認済み』と記載。紹介文・Xは未受領のため空欄"
+ },
+ {
+  "id": "jun",
+  "name": "JUN",
+  "participationType": "応援者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": "https://x.com/MATHU030417",
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/jun/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1280,
+    "height": 1280
+   },
+   "anchor": [
+    0.5,
+    0.9296875
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/jun/reactions/v1/idle.png",
+    "select": "assets/characters/jun/reactions/v1/select.png",
+    "ready": "assets/characters/jun/reactions/v1/ready.png",
+    "hit": "assets/characters/jun/reactions/v1/hit.png",
+    "perfect": "assets/characters/jun/reactions/v1/perfect.png",
+    "combo": "assets/characters/jun/reactions/v1/combo.png",
+    "miss": "assets/characters/jun/reactions/v1/miss.png",
+    "cheer": "assets/characters/jun/reactions/v1/cheer.png",
+    "clear": "assets/characters/jun/reactions/v1/clear.png",
+    "best": "assets/characters/jun/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-01 素材パックに『キャラ化・ゲーム掲載許可：ユーザー確認済み』と記載。紹介文・紹介ページは未提供のため未設定。reactions.csv未受領のため record=best（自己ベスト）と解釈"
+ },
+ {
+  "id": "nanami",
+  "name": "淫乱軍ななみ",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "淫乱軍ななみの紹介ページ",
+    "url": "https://share.google/Y54nFtf5khtdKFs3z"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/nanami/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.9375
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/nanami/reactions/v1/idle.png",
+    "select": "assets/characters/nanami/reactions/v1/select.png",
+    "ready": "assets/characters/nanami/reactions/v1/ready.png",
+    "hit": "assets/characters/nanami/reactions/v1/hit.png",
+    "perfect": "assets/characters/nanami/reactions/v1/perfect.png",
+    "combo": "assets/characters/nanami/reactions/v1/combo.png",
+    "miss": "assets/characters/nanami/reactions/v1/miss.png",
+    "cheer": "assets/characters/nanami/reactions/v1/cheer.png",
+    "clear": "assets/characters/nanami/reactions/v1/clear.png",
+    "best": "assets/characters/nanami/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-01 素材パックに『キャラ化・ゲーム公開許可：ユーザー確認済み』と記載。紹介文・Xは未提供のため空欄。紹介ページはユーザー提供のGoogle共有URL（遷移先は未確認）"
+ },
+ {
+  "id": "rizu",
+  "name": "りず",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "りずの紹介ページ",
+    "url": "https://lit.link/f483de0f-6d17-49cb-8e12-968c7918bdcd"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/rizu/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 0.86,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1254,
+    "height": 1254
+   },
+   "anchor": [
+    0.5,
+    0.987241
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/rizu/reactions/v1/idle.png",
+    "select": "assets/characters/rizu/reactions/v1/select.png",
+    "ready": "assets/characters/rizu/reactions/v1/ready.png",
+    "hit": "assets/characters/rizu/reactions/v1/hit.png",
+    "perfect": "assets/characters/rizu/reactions/v1/perfect.png",
+    "combo": "assets/characters/rizu/reactions/v1/combo.png",
+    "miss": "assets/characters/rizu/reactions/v1/miss.png",
+    "cheer": "assets/characters/rizu/reactions/v1/cheer.png",
+    "clear": "assets/characters/rizu/reactions/v1/clear.png",
+    "best": "assets/characters/rizu/reactions/v1/best.png"
+   },
+   "stateOffsetY": {
+    "select": 1,
+    "hit": -3,
+    "perfect": -6,
+    "combo": 2,
+    "miss": -2,
+    "cheer": -1,
+    "clear": -1,
+    "best": -6
+   }
+  },
+  "publicReleaseNote": "2026-11-03 素材パックに『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。紹介文・Xは未提供のため空欄。紹介ページは提供されたlit.link（遷移先は取得制限で未確認）。足元微調整は stateOffsetY（素材パックの renderOffsetYSourcePx、success→hit）。素材は1254px・可視高さがキャンバスの97.5%（既存キャラは71〜87%）で、倍率1.0だと舞台上部で頭が切れるため display.scale=0.86（可視高さを既存最大の約87%より少し小さく。髪の上に余白を残す）"
+ },
+ {
+  "id": "minato",
+  "name": "みなと",
+  "participationType": "応援者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": "https://x.com/SKSGeRYJFI77013",
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/minato/base.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.921875
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/minato/reactions/v1/idle.png",
+    "select": "assets/characters/minato/reactions/v1/select.png",
+    "ready": "assets/characters/minato/reactions/v1/ready.png",
+    "hit": "assets/characters/minato/reactions/v1/hit.png",
+    "perfect": "assets/characters/minato/reactions/v1/perfect.png",
+    "combo": "assets/characters/minato/reactions/v1/combo.png",
+    "miss": "assets/characters/minato/reactions/v1/miss.png",
+    "cheer": "assets/characters/minato/reactions/v1/cheer.png",
+    "clear": "assets/characters/minato/reactions/v1/clear.png",
+    "best": "assets/characters/minato/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-03 素材パックに『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。Xはユーザーが後から指定（https://x.com/SKSGeRYJFI77013）。素材パックのlit.linkはりずと同一URLで取り違えの可能性があるため未登録。紹介文は未提供のため空欄。success→hit"
+ },
+ {
+  "id": "izana_ryo",
+  "name": "誘 リョウ",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "誘 リョウの紹介ページ",
+    "url": "https://www.cityheaven.net/hyogo/A2801/A280102/kobe_gold/girlid-64202997/"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/izana_ryo/reactions/v1/idle.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 1024,
+    "height": 1024
+   },
+   "anchor": [
+    0.5,
+    0.9453125
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/izana_ryo/reactions/v1/idle.png",
+    "select": "assets/characters/izana_ryo/reactions/v1/select.png",
+    "ready": "assets/characters/izana_ryo/reactions/v1/ready.png",
+    "hit": "assets/characters/izana_ryo/reactions/v1/hit.png",
+    "perfect": "assets/characters/izana_ryo/reactions/v1/perfect.png",
+    "combo": "assets/characters/izana_ryo/reactions/v1/combo.png",
+    "miss": "assets/characters/izana_ryo/reactions/v1/miss.png",
+    "cheer": "assets/characters/izana_ryo/reactions/v1/cheer.png",
+    "clear": "assets/characters/izana_ryo/reactions/v1/clear.png",
+    "best": "assets/characters/izana_ryo/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-03 素材パック（CLAUDE_HANDOFF.md / profile.json）に『キャラ化・ゲーム公開の許可：ユーザー確認済み』と記載。正式表記は 誘-いざな-リョウ（読み：いざな りょう）。紹介文・Xは未指定のため空欄（捏造しない）。紹介ページは提供された cityheaven のURLをそのまま登録（遷移先はこの環境から未確認）。10状態PNGは1024×1024・共通倍率・靴の中心x=512／靴底y=968に調整済みで、トリミングや個別の倍率変更はしていない（anchor=968/1024、stateOffsetYなし、display.scale=1.0。可視高さは約86%で既存の最大値と同程度）。素材のselected→select、success→hit に対応づけ。通常表示（キャラ選択カード）も reactions の idle を使用。参照用の採用原画 approved_base_original.png はリポジトリに入れていない"
+ },
+ {
+  "id": "suzumori_aoi",
+  "name": "涼森 あおい",
+  "participationType": "出場者",
+  "affiliation": null,
+  "bio": null,
+  "xUrl": null,
+  "links": [
+   {
+    "label": "涼森 あおいの紹介ページ",
+    "url": "https://promee.link/ms536"
+   }
+  ],
+  "enabledInPrototype": true,
+  "publicReleaseApproved": true,
+  "assetVersion": "v1",
+  "images": {
+   "idle": "assets/characters/suzumori_aoi/reactions/v1/idle.png"
+  },
+  "fallbackState": "idle",
+  "display": {
+   "scale": 1.0,
+   "offsetY": 0
+  },
+  "reactions": {
+   "version": "v1",
+   "canvas": {
+    "width": 512,
+    "height": 512
+   },
+   "anchor": [
+    0.5,
+    0.9140625
+   ],
+   "base": "idle",
+   "fallback": "idle",
+   "states": {
+    "idle": "assets/characters/suzumori_aoi/reactions/v1/idle.png",
+    "select": "assets/characters/suzumori_aoi/reactions/v1/select.png",
+    "ready": "assets/characters/suzumori_aoi/reactions/v1/ready.png",
+    "hit": "assets/characters/suzumori_aoi/reactions/v1/hit.png",
+    "perfect": "assets/characters/suzumori_aoi/reactions/v1/perfect.png",
+    "combo": "assets/characters/suzumori_aoi/reactions/v1/combo.png",
+    "miss": "assets/characters/suzumori_aoi/reactions/v1/miss.png",
+    "cheer": "assets/characters/suzumori_aoi/reactions/v1/cheer.png",
+    "clear": "assets/characters/suzumori_aoi/reactions/v1/clear.png",
+    "best": "assets/characters/suzumori_aoi/reactions/v1/best.png"
+   }
+  },
+  "publicReleaseNote": "2026-11-09 素材パック（CLAUDE_README.md / profile.json）に『キャラ化・ゲーム公開の許可は確認済み』（permission_confirmed:true）と記載。参加区分は出場者。紹介ページは profile.json の https://promee.link/ms536 をそのまま登録（遷移先はこの環境から未確認）。紹介文・Xは未指定のため空欄（捏造しない）。10状態PNGは512×512 RGBA（これまでの1024・1254より小さい）、靴底y=467〜468で全状態そろっており補正なし（anchor=468/512、stateOffsetYなし、display.scale=1.0、可視高さ約80%で見切れなし）。素材の 04_success→hit、02_select→select、10_personal_best→best に対応づけ。通常表示（キャラ選択カード）も reactions の idle を使用。base_character.png は idle とほぼ同一のためリポジトリに入れていない"
+ }
+]
