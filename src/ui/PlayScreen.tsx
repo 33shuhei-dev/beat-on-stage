@@ -71,12 +71,27 @@ export function PlayScreen({ spec, settings, onFinish, onRestart, onExit, exitLa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 曲の進み具合（表示だけ。判定や時刻には使わない）
+  const barRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const total = spec.buffer.duration;
+    const id = window.setInterval(() => {
+      const s = sessionRef.current as unknown as { songTime?: () => number } | null;
+      const t = s?.songTime ? s.songTime() : 0;
+      const el = barRef.current;
+      if (el && total > 0 && Number.isFinite(t)) el.style.transform = `scaleX(${Math.min(1, Math.max(0, t / total))})`;
+    }, 250);
+    return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const paused = state === 'paused';
   const error = state === 'error';
 
   return (
     <div className="play">
       <canvas ref={canvasRef} className="play-canvas" aria-label="プレイ画面。4レーン。キーボードは D F J K" />
+      <div className="song-progress" aria-hidden><div ref={barRef} /></div>
       <div className="hud">
         <div className="hud-left">
           <div className="hud-title">{spec.title}</div>

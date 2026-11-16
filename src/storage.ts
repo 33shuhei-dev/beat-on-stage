@@ -72,3 +72,35 @@ export const setDevMode = (on: boolean) => write('dev', on);
 function clamp(v: number, lo: number, hi: number) {
   return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : lo;
 }
+
+/** 表示用：譜面版を問わず、その曲×難易度の自己ベストのうち最高点（無ければ null） */
+export function loadBestAny(songId: string, diff: Difficulty): BestRecord | null {
+  let best: BestRecord | null = null;
+  try {
+    const prefix = `${P}best:${songId}:${diff}:`;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith(prefix)) continue;
+      const r = read<BestRecord>(k.slice(P.length));
+      if (r && typeof r.score === 'number' && (!best || r.score > best.score)) best = r;
+    }
+  } catch {
+    /* 保存を読めない環境 */
+  }
+  return best;
+}
+
+/** キャラごとの応援プレイ回数（最後まで遊んだ回数。オートプレイ・中断は数えない） */
+export function loadPlays(characterId: string): number {
+  const n = read<number>(`plays:${characterId}`);
+  return typeof n === 'number' && Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+}
+export function addPlay(characterId: string): number {
+  const n = loadPlays(characterId) + 1;
+  write(`plays:${characterId}`, n);
+  return n;
+}
+
+export type Rank = 'S' | 'A' | 'B' | 'C';
+/** ランク（仮置きのしきい値：95万/85万/70万） */
+export const rankOf = (score: number): Rank => (score >= 950000 ? 'S' : score >= 850000 ? 'A' : score >= 700000 ? 'B' : 'C');

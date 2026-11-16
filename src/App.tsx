@@ -7,7 +7,7 @@ import { buildPractice } from './engine/practice';
 import { resultState } from './engine/reaction';
 import { loadSprites, poseSources, type SpriteSet } from './engine/sprites';
 import { barLinesMs, buildTimedNotes } from './engine/tempo';
-import { bestKey, isDevMode, loadBest, loadSelection, loadSettings, markTutorialSeen, saveBest, saveSelection, saveSettings, setDevMode, tutorialSeen, type BestRecord, type Selection } from './storage';
+import { addPlay, bestKey, isDevMode, loadBest, loadBestAny, loadPlays, loadSelection, rankOf, loadSettings, markTutorialSeen, saveBest, saveSelection, saveSettings, setDevMode, tutorialSeen, type BestRecord, type Selection } from './storage';
 import { DIFFICULTIES, DIFFICULTY_LABEL, type CharacterData, type CharacterState, type ChartData, type Difficulty, type SongData } from './types';
 import { PlayScreen, type PlaySpec } from './ui/PlayScreen';
 import { ReactionLab } from './ui/ReactionLab';
@@ -25,6 +25,8 @@ interface ResultView {
   newBest: boolean;
   /** 結果画面のキャラのポーズ（clear / best） */
   pose: CharacterState;
+  /** このキャラでの応援プレイ回数（今回を含む。オートプレイは null） */
+  plays: number | null;
 }
 
 export default function App() {
@@ -51,6 +53,7 @@ export default function App() {
   const [result, setResult] = useState<ResultView | null>(null);
   const [autoplay, setAutoplay] = useState(false);
   const [practiceDone, setPracticeDone] = useState(false);
+  const [charFilter, setCharFilter] = useState<string>('all');
 
   const setSettings = (s: Settings) => {
     setSettingsState(s);
@@ -115,6 +118,8 @@ export default function App() {
       setDev(next);
     }
   };
+
+  useEffect(() => { try { window.scrollTo(0, 0); } catch { /* ignore */ } }, [screen]);
 
   // 画面移動・ゲーム開始・リトライでフル試聴を止める（再生位置は捨てる）
   useEffect(() => { setListenId(null); }, [screen, playKey]);
@@ -190,7 +195,8 @@ export default function App() {
     }
     // 初回記録・オートプレイ・同点以下は clear、以前の記録を更新したときだけ best
     const pose = resultState({ autoplay: r.autoplay, hadPreviousBest: prev !== null, improved: newBest });
-    setResult({ r, prevBest: prev, newBest, pose });
+    const plays = r.autoplay || !character ? null : addPlay(character.id);
+    setResult({ r, prevBest: prev, newBest, pose, plays });
     setScreen('result');
   };
 
@@ -237,18 +243,38 @@ export default function App() {
 
   return (
     <div className="app">
-      <Logo onTap={onLogoTap} />
+      <Logo onTap={onLogoTap} compact={screen !== 'character'} />
+      {(screen === 'character' || screen === 'song' || screen === 'difficulty') && (
+        <StepBar
+          screen={screen}
+          charName={character?.name ?? null}
+          songTitle={screen === 'difficulty' ? song?.title ?? null : null}
+          onGo={(s) => setScreen(s)}
+        />
+      )}
 
       {screen === 'character' && (
         <section className="screen">
           <div className="step"><span className="step-no">1</span>キャラをえらぶ</div>
+          <div className="chips" role="group" aria-label="表示するキャラ">
+            {[['all', 'すべて'], ['出場者', '出場者'], ['応援者', '応援者']].map(([k, label]) => {
+              const n = k === 'all' ? chars.length : chars.filter((c) => c.participationType === k).length;
+              if (k !== 'all' && n === 0) return null;
+              return (
+                <button key={k} className={`chip ${charFilter === k ? 'on' : ''}`} aria-pressed={charFilter === k} onClick={() => setCharFilter(k)}>
+                  {label}<small>{n}</small>
+                </button>
+              );
+            })}
+          </div>
           <div className="cards chars">
-            {chars.map((c) => (
+            {chars.filter((c) => charFilter === 'all' || c.participationType === charFilter).map((c) => (
               <CharacterCard
                 key={c.id}
                 c={c}
                 selected={c.id === sel.characterId}
                 posing={selectPose === c.id}
+                plays={loadPlays(c.id)}
                 onSelect={() => {
                   getAudio(); // 最初の操作で音声コンテキストを生成
                   const ok = songs.find((x) => x.id === sel.songId && playableBy(x, c.id)) ?? songs.find((x) => playableBy(x, c.id));
@@ -264,9 +290,12 @@ export default function App() {
           </div>
           {devMode && character && <ReactionLab character={character} settings={settings} />}
           <p className="note small">キャラによって得点や判定は変わりません。</p>
-          <div className="footer-actions sticky-foot">
-            <button className="btn ghost" onClick={() => setShowSettings(true)}>⚙ 設定</button>
-            <button className="btn primary" disabled={!character} onClick={() => setScreen('song')}>このキャラで決定</button>
+          <div className="sticky-foot">
+            {character && <div className="picked" aria-live="polite"><span>選択中</span><b>{character.name}</b></div>}
+            <div className="footer-actions">
+              <button className="btn ghost" onClick={() => setShowSettings(true)}>⚙ 設定</button>
+              <button className="btn primary grow" disabled={!character} onClick={() => setScreen('song')}>このキャラで決定</button>
+            </div>
           </div>
         </section>
       )}
@@ -276,13 +305,12 @@ export default function App() {
       {screen === 'song' && character && (
         <section className="screen">
           <div className="step"><span className="step-no">2</span>曲をえらぶ</div>
-          <p className="note small">キャラ：{character.name}</p>
           <div className="cards">
             {songs.filter((s) => !s.exclusiveCharacterId || s.exclusiveCharacterId === character.id).map((s) => {
               const ok = playableBy(s, character.id);
               const owner = s.exclusiveCharacterId ? chars.find((x) => x.id === s.exclusiveCharacterId)?.name : null;
               return (
-                <div key={s.id} className="song-item">
+                <div key={s.id} className={`song-item ${sel.songId === s.id ? 'selected' : ''}`}>
                 <button
                   className={`song-card ${ok ? '' : 'disabled'} ${sel.songId === s.id ? 'selected' : ''}`}
                   disabled={!ok}
@@ -299,7 +327,9 @@ export default function App() {
                     <div className="song-title">{s.title}</div>
                     <div className="song-info">{owner ? `${owner}専用` : '共通曲'}・{Math.round(s.durationSeconds)}秒</div>
                     {!s.available && <div className="badge">準備中</div>}
-                                      </div>
+                    {ok && <BestChips song={s} />}
+                  </div>
+                  {ok && <span className="chev" aria-hidden>›</span>}
                 </button>
                 <ListenButton song={s} onOpen={setListenId} />
                 </div>
@@ -326,11 +356,14 @@ export default function App() {
           <div className="diffs" role="radiogroup" aria-label="難易度">
             {DIFFICULTIES.map((d) => {
               const ok = !!song.charts[d];
-              const best = ok && chart && d === sel.difficulty ? loadBest(bestKey(song.id, d, chart.chartVersion)) : null;
+              const best = ok ? loadBestAny(song.id, d) : null;
               return (
                 <button key={d} role="radio" aria-checked={sel.difficulty === d} className={`diff ${d} ${sel.difficulty === d ? 'selected' : ''}`} disabled={!ok} onClick={() => setSel({ ...sel, difficulty: d })}>
-                  <span className="diff-name">{DIFFICULTY_LABEL[d]}</span>
-                  <span className="diff-info">{ok ? (best ? `自己ベスト ${best.score.toLocaleString('ja-JP')}` : '未プレイ') : '準備中'}</span>
+                  <span className="diff-l">
+                    <span className="diff-name">{DIFFICULTY_LABEL[d]}</span>
+                    <span className="diff-desc">{DIFF_DESC[d]}</span>
+                  </span>
+                  <span className="diff-info">{ok ? (best ? <><span className="nw">自己ベスト {best.score.toLocaleString('ja-JP')}</span><b className={`rk rk-${rankOf(best.score)}`}>{rankOf(best.score)}</b></> : '未プレイ') : '準備中'}</span>
                 </button>
               );
             })}
@@ -349,14 +382,14 @@ export default function App() {
               <input type="checkbox" checked={autoplay} onChange={(e) => setAutoplay(e.target.checked)} />
             </label>
           )}
+          <button className="btn primary big start" disabled={!playSpec} onClick={onStartPressed}>
+            {playSpec ? 'スタート' : prepError ? '読み込みに失敗' : '読み込み中…'}
+          </button>
           <div className="footer-actions">
             <button className="btn ghost" onClick={() => setScreen('song')}>← 曲</button>
             <button className="btn ghost" onClick={() => setShowSettings(true)}>⚙ 設定</button>
             <button className="btn ghost" disabled={!sprites} onClick={() => { void getAudio().unlock(); setPlayKey((k) => k + 1); setScreen('practice'); }}>操作練習</button>
           </div>
-          <button className="btn primary big" disabled={!playSpec} onClick={onStartPressed}>
-            {playSpec ? 'スタート' : prepError ? '読み込みに失敗' : '読み込み中…'}
-          </button>
           <p className="note small center">スマホは親指2本で。PCは D F J K キー、Esc で一時停止。</p>
         </section>
       )}
@@ -404,10 +437,48 @@ export default function App() {
 
 const SUBTITLE = 'ミスヘブン総選挙 非公式応援リズムゲーム';
 
-function Logo({ onTap }: { onTap: () => void }) {
+const DIFF_DESC: Record<Difficulty, string> = { easy: 'はじめてでも安心', normal: 'ほどよい手ごたえ', hard: '指がいそがしい' };
+
+/** 進み具合（キャラ → 曲 → 難易度）。済んだ段は押して戻れる */
+function StepBar({ screen, charName, songTitle, onGo }: { screen: 'character' | 'song' | 'difficulty'; charName: string | null; songTitle: string | null; onGo: (s: 'character' | 'song') => void }) {
+  const at = screen === 'character' ? 0 : screen === 'song' ? 1 : 2;
+  const items: { label: string; value: string | null; to: 'character' | 'song' | null }[] = [
+    { label: 'キャラ', value: at > 0 ? charName : null, to: 'character' },
+    { label: '曲', value: at > 1 ? songTitle : null, to: 'song' },
+    { label: '難易度', value: null, to: null },
+  ];
+  return (
+    <nav className="stepbar" aria-label="進み具合">
+      {items.map((it, i) => {
+        const cls = `sb ${i === at ? 'now' : i < at ? 'done' : 'todo'}`;
+        const body = (<><span className="sb-no">{i < at ? '✓' : i + 1}</span><span className="sb-tx">{it.value ?? it.label}</span></>);
+        return i < at && it.to ? (
+          <button key={it.label} className={cls} onClick={() => onGo(it.to!)} aria-label={`${it.label}をえらび直す`}>{body}</button>
+        ) : (
+          <div key={it.label} className={cls} aria-current={i === at ? 'step' : undefined}>{body}</div>
+        );
+      })}
+    </nav>
+  );
+}
+
+/** 曲カードの記録（難易度ごとのランク。未プレイは －） */
+function BestChips({ song }: { song: SongData }) {
+  const list = DIFFICULTIES.filter((d) => song.charts[d]).map((d) => ({ d, best: loadBestAny(song.id, d) }));
+  if (!list.some((x) => x.best)) return <div className="bests none">未プレイ</div>;
+  return (
+    <div className="bests" aria-label="自己ベストのランク">
+      {list.map(({ d, best }) => (
+        <span key={d} className={`bc ${d}`}><i>{DIFFICULTY_LABEL[d][0]}</i><b className={best ? `rk rk-${rankOf(best.score)}` : 'rk'}>{best ? rankOf(best.score) : '－'}</b></span>
+      ))}
+    </div>
+  );
+}
+
+function Logo({ onTap, compact }: { onTap: () => void; compact?: boolean }) {
   const [broken, setBroken] = useState(false);
   return (
-    <header className="logo" onClick={onTap}>
+    <header className={`logo ${compact ? 'compact' : ''}`} onClick={onTap}>
       {broken ? (
         <div className="logo-main">BEAT <span>ON</span> STAGE</div>
       ) : (
@@ -437,7 +508,7 @@ function Jacket({ title, src, small }: { title: string; src?: string | null; sma
   );
 }
 
-function CharacterCard({ c, selected, posing, onSelect, onProfile }: { c: CharacterData; selected: boolean; posing: boolean; onSelect: () => void; onProfile: () => void }) {
+function CharacterCard({ c, selected, posing, plays, onSelect, onProfile }: { c: CharacterData; selected: boolean; posing: boolean; plays: number; onSelect: () => void; onProfile: () => void }) {
   const [broken, setBroken] = useState(false);
   const [poseBroken, setPoseBroken] = useState(false);
   const selectSrc = c.reactions?.states.select ?? null;
@@ -461,8 +532,10 @@ function CharacterCard({ c, selected, posing, onSelect, onProfile }: { c: Charac
         </div>
         <div className="char-meta">
           <div className="char-name">{c.name}</div>
-          <div className="char-type">{c.participationType}</div>
+          <div className={`char-type ${c.participationType === '応援者' ? 'sup' : ''}`}>{c.participationType}</div>
         </div>
+        {selected && <span className="char-check" aria-hidden>✓</span>}
+        {plays > 0 && <span className="char-plays" aria-label={`応援プレイ ${plays}回`}>♪{plays}</span>}
       </button>
       <button className="btn mini char-profile" onClick={onProfile}>プロフィール</button>
     </div>
@@ -475,6 +548,8 @@ function ProfileScreen({ c, songs, onListen, onBack }: { c: CharacterData; songs
   const [broken, setBroken] = useState(false);
   const rows: [string, string][] = [['区分', c.participationType]];
   if (c.affiliation) rows.push(['所属', c.affiliation]);
+  const plays = loadPlays(c.id);
+  if (plays > 0) rows.push(['応援', `${plays}回プレイ`]);
   return (
     <section className="screen profile">
       <div className="step"><span className="step-no">★</span>プロフィール</div>
@@ -525,7 +600,13 @@ function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion
   const { r, prevBest, newBest } = rv;
   const s = r.stats;
   const diff = prevBest ? r.score - prevBest.score : null;
-  const rank = r.score >= 950000 ? 'S' : r.score >= 850000 ? 'A' : r.score >= 700000 ? 'B' : 'C';
+  const rank = rankOf(r.score);
+  const allPerfect = s.totalUnits > 0 && s.perfect === s.totalUnits;
+  const fullCombo = s.totalUnits > 0 && s.miss === 0;
+  const acc = s.totalUnits > 0 ? Math.round(((s.perfect + s.great * 0.7 + s.good * 0.3) / s.totalUnits) * 1000) / 10 : 0;
+  const pageUrl = (() => { try { return location.origin + location.pathname; } catch { return ''; } })();
+  const shareText = `BEAT ON STAGE で ${character.name} を応援プレイ！\n「${song.title}」${DIFFICULTY_LABEL[difficulty]}\nSCORE ${r.score.toLocaleString('ja-JP')}（ランク${rank}${allPerfect ? '・ALL PERFECT' : fullCombo ? '・FULL COMBO' : ''}）\n#BEATONSTAGE #ミスヘブン総選挙`;
+  const shareHref = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`;
   return (
     <section className="screen result">
       <div className="result-card">
@@ -534,8 +615,14 @@ function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion
             <div className="song-title">{song.title}</div>
             <div className="song-info">{DIFFICULTY_LABEL[difficulty]}{r.autoplay ? '・オートプレイ（記録対象外）' : ''}</div>
           </div>
-          <div className="rank" aria-label={`ランク ${rank}`}>{rank}</div>
+          <div className={`rank rk-${rank}`} aria-label={`ランク ${rank}`}>{rank}</div>
         </div>
+        {(allPerfect || fullCombo || newBest) && (
+          <div className="medals">
+            {allPerfect ? <span className="medal ap">ALL PERFECT</span> : fullCombo ? <span className="medal fc">FULL COMBO</span> : null}
+            {newBest && prevBest && <span className="medal nb">自己ベスト更新</span>}
+          </div>
+        )}
         <div className="result-main">
           <div className="result-char">
             <PoseImg key={reactions ? rv.pose : 'idle'} character={character} state={reactions ? rv.pose : 'idle'} />
@@ -554,6 +641,11 @@ function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion
             <div className="combo"><span className="nw">最大コンボ</span> <span className="nw"><b>{s.maxCombo}</b> / {s.totalUnits}</span></div>
           </div>
         </div>
+        {s.totalUnits > 0 && (
+          <div className="gbar" aria-hidden>
+            <i className="b-perfect" style={{ flexGrow: s.perfect }} /><i className="b-great" style={{ flexGrow: s.great }} /><i className="b-good" style={{ flexGrow: s.good }} /><i className="b-miss" style={{ flexGrow: s.miss }} />
+          </div>
+        )}
         <table className="breakdown">
           <tbody>
             <tr><th className="g-perfect">PERFECT</th><td>{s.perfect}</td></tr>
@@ -561,6 +653,7 @@ function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion
             <tr><th className="g-good">GOOD</th><td>{s.good}</td></tr>
             <tr><th className="g-miss">MISS</th><td>{s.miss}</td></tr>
             <tr><th>FAST / SLOW</th><td>{s.fast} / {s.slow}</td></tr>
+            <tr><th>達成率</th><td>{acc.toFixed(1)}%</td></tr>
           </tbody>
         </table>
         <div className="result-foot"><span className="nw">BEAT ON STAGE</span> <span className="nw">{SUBTITLE}</span> <span className="nw">譜面 {chartVersion}</span></div>
@@ -570,7 +663,9 @@ function ResultScreen({ rv, song, character, difficulty, reactions, chartVersion
       ) : (
         <button className="btn ghost profile-promo" onClick={onProfile}>★ {character.name} のプロフィールを見る</button>
       )}
+      {rv.plays !== null && <p className="note small center cheer-count">{character.name} の応援プレイ <b>{rv.plays}</b> 回目</p>}
       <button className="btn primary big" onClick={onRetry}>もう一度</button>
+      {!r.autoplay && <a className="btn big share-x" href={shareHref} target="_blank" rel="noopener noreferrer">結果を X でシェア</a>}
       {nextOk && <button className="btn big next-diff" onClick={() => onNextDifficulty(next!)}>難易度を上げる（{DIFFICULTY_LABEL[next!]}）</button>}
       <div className="result-nav">
         <button className="btn ghost" onClick={onPickDifficulty}>難易度選択</button>
